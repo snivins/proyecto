@@ -3,13 +3,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Chats extends CI_Controller {
 
-	//
-	// public function index()
-	// {
-	// 	$data['ay'] = 'CHAT CHAN CHAAAAAAAAN';
-	// 	$this->load->view('welcome_message', $data);
-	// }
-
 	public function index()
   {
 		$msj = $this->Chat->get_mensajes();
