@@ -26,48 +26,47 @@
     $(document).ready(function() {
       var valor = 0;
       var calculo;
+      //calculo de mensaje privado
       $("#ay").mousedown(function () {
-        $("#parr").css("background-color" , "red")
-        $("#mov").animate({left : "+=100"}, 500);
-        calculo = setInterval(function(){
-          valor+= 0.1;
-          $("#valor").val(valor*10);
-          if (valor > 5 && valor < 7) {
-            $("#parr").css("background-color" , "green");
-          } else $("#parr").css("background-color" , "red");
-        }, 1);
+          mini_start();
       });
+
       $("#ay").mouseup(function () {
-        if (valor > 10) {
-          valor = 10;
+          mini_stop();
+      });
+      $(this).keydown(function (e) {
+        if(e.keyCode == 32){
+          mini_start();
         }
-        $("#mov").animate({left : "-=100"});
-        $("#parr").css("background-color" , "red");
-        var valor_final = Math.floor(valor * 10);
-        valor = 0;
-        clearInterval(calculo);
-        if (valor_final > 50 && valor_final < 70) alert("yay");
+      });
+      $(this).keyup(function (e) {
+        if(e.keyCode == 32){
+          mini_stop();
+        }
       });
 
 
 
-      $.getJSON("<?= base_url() ?>" + 'chats/ver_mensajes', pintar);
       setInterval(function(){
         $(this).attr("title", "prueba chat");
-        $.getJSON("<?= base_url() ?>" + 'chats/ver_mensajes', pintar);
+        mostrar();
       }, 3000);
 
-          $("#enviar").click(function () {
-            if ($("#contenido").val() != "") {
-              $.getJSON("<?= base_url() ?>" + "chats/escribir_mensajes/" + $("#usuario").val() + "/"+ $("#contenido").val());
-              $("#contenido").val("");
-              $.getJSON("<?= base_url() ?>" + 'chats/ver_mensajes', pintar);
-            } else {
-              alert('Debes introducir un comentario');
-            }
+      $("#enviar").click(function () {
+        if ($("#contenido").val() != "") {
+          $.getJSON("<?= base_url() ?>" + "chats/escribir_mensajes/" + $("#contenido").val() + "/"+ $("#usuario").val());
+          $("#contenido").val("");
+          mostrar();
+        } else {
+          alert('Debes introducir un comentario');
+        }
+      });
+    });
 
-          });
-        });
+    //funciones
+    function mostrar() {
+      $.getJSON("<?= base_url() ?>" + 'chats/ver_mensajes', pintar);
+    }
 
     function pintar(r) {
       $('#mensajes').empty();
@@ -75,6 +74,41 @@
         $('#mensajes').append('<p>'+r[cosa].usuario+': '+r[cosa].contenido + '</p>');
       }
     }
+
+    function mini_start() {
+        //en caso de que se bugee
+        valor = 0;
+
+        $("#parr").css("background-color" , "red")
+        $("#mov").animate({left : "+=200"}, 500);
+        calculo = setInterval(function(){
+          valor+= 0.1;
+          $("#valor").val(valor*10);
+          if (valor > 5 && valor < 7) {
+            $("#parr").css("background-color" , "green");
+          } else if (valor > 3 && valor < 5) {
+            $("#parr").css("background-color" , "yellow");
+          } else if (valor > 7 && valor < 9) {
+            $("#parr").css("background-color" , "yellow");
+          } else $("#parr").css("background-color" , "red");
+        }, 1);
+        if (valor > 10) {
+          clearInterval(calculo);
+        }
+    }
+
+    function mini_stop() {
+      if (valor > 10) {
+        valor = 10;
+      }
+      $("#mov").animate({left : "-=200"});
+      $("#parr").css("background-color" , "red");
+      var valor_final = Math.floor(valor * 10);
+      valor = 0;
+      clearInterval(calculo);
+      if (valor_final > 50 && valor_final < 70) alert("yay");
+    }
+
   </script>
 </head>
 <body>

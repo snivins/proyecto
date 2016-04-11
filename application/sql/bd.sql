@@ -18,11 +18,17 @@ drop table if exists partidas cascade;
 create table partidas (
   id_partida  bigserial constraint pk_partidas primary key,
   estado varchar(30), /* creada, jugando, terminada, cancelada*/
-  creada_el timestamp default current_timestamp
+  creada_el timestamp default current_timestamp,
+  "jug_1"  bigint constraint fk_partidas_1_usuarios references usuarios(id),
+  "jug_2"  bigint constraint fk_partidas_2_usuarios references usuarios(id),
+  "jug_3"  bigint constraint fk_partidas_3_usuarios references usuarios(id),
+  "jug_4"  bigint constraint fk_partidas_4_usuarios references usuarios(id)
 );
+/*
+creo partida, soy jug_1, estado 'creada' (pueden unirse a la partida)
 
 
-
+*/
 drop table if exists ci_sessions cascade;
 
 create table "ci_sessions" (
@@ -34,6 +40,9 @@ create table "ci_sessions" (
 
 create index "ci_sessions_timestamp" on "ci_sessions" ("timestamp");
 /*
+
+
+
 json contiene usuario_id
 prueba=> insert into json (prueba) VALUES ('{"nombre":"prueba", "carta" : "mortadela"}');
 INSERT 0 1
@@ -47,16 +56,23 @@ prueba=> select prueba->>'carta' from json; devuelve mortadela
 */
 
 
-/*
+
 create table jugadas (
-  turno bigint constraint pk_jugadas primary key,
+  id bigserial constraint pk_jugadas primary key,
+  turno bigserial not null,
   ronda int not null, / para saber cuantas cartas repartir / ronda%3=0 => 3 cartas, ronda +1 % 3 => 2 cartas else 1 carta
-dealer /jug1, jug2 ,jug3 o jug4/
-  baraja, /cartas barajadas/ array cartas tipo 1espada , 3basto, 4copas,12oro
-  vida, "3oro"
-  cartas_jugadas /solo las cartas jugadas y activas en el turno se renueva tras una ronda con 3 cartas
-  puntos_ronda /en caso de que envie y acepte, se guarda aqui el total
-  puntos_totales,
+  dealer_id bigint constraint fk_jugadas_usuarios references usuarios(id),/*jug1, jug2 ,jug3 o jug4*/
+  baraja text[], /*cartas barajadas/ array cartas tipo 1espada , 3basto, 4copas,12oro */
+  vida varchar(20),/* "3oro" */
+  cartas_jugadas text[],/*solo las cartas jugadas y activas en el turno se renueva tras una ronda con 3 cartas*/
+  puntos_ronda numeric(30) not null default 1,/*en caso de que envie y acepte, se guarda aqui el total*/
+  puntos_totales numeric(80),
+  jug_1 json not null,
+  jug_2 json not null,
+  jug_3 json not null,
+  jug_4 json not null
+
+  /*
 
   jug_1 '{"id": "1", "carta1" : "4basto", "carta2" : "3basto"}' si solo tiene 2 cartas
 
