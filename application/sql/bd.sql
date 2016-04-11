@@ -21,11 +21,18 @@ create table partidas (
   creada_el timestamp default current_timestamp
 );
 
-drop table if exists json cascade;
-create table json (
-  id  bigserial constraint pk_partidas primary key,
-  prueba jsonb
+
+
+drop table if exists ci_sessions cascade;
+
+create table "ci_sessions" (
+    "id" varchar(40) not null primary key,
+    "ip_address" varchar(45) not null,
+    "timestamp" bigint default 0 not null,
+    "data" text default '' not null
 );
+
+create index "ci_sessions_timestamp" on "ci_sessions" ("timestamp");
 /*
 json contiene usuario_id
 prueba=> insert into json (prueba) VALUES ('{"nombre":"prueba", "carta" : "mortadela"}');
@@ -45,10 +52,10 @@ create table jugadas (
   turno bigint constraint pk_jugadas primary key,
   ronda int not null, / para saber cuantas cartas repartir / ronda%3=0 => 3 cartas, ronda +1 % 3 => 2 cartas else 1 carta
 dealer /jug1, jug2 ,jug3 o jug4/
-  baraja, /cartas barajadas/ json tipo {}
+  baraja, /cartas barajadas/ array cartas tipo 1espada , 3basto, 4copas,12oro
   vida, "3oro"
-  cartas_jugadas /solo las cartas jugadas y activas en el turno
-  puntos_ronda
+  cartas_jugadas /solo las cartas jugadas y activas en el turno se renueva tras una ronda con 3 cartas
+  puntos_ronda /en caso de que envie y acepte, se guarda aqui el total
   puntos_totales,
 
   jug_1 '{"id": "1", "carta1" : "4basto", "carta2" : "3basto"}' si solo tiene 2 cartas
