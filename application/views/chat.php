@@ -23,9 +23,12 @@
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js">
   </script>
   <script>
+
+    var valor = 0;
+    var calculo;
+    var valido = false;
     $(document).ready(function() {
-      var valor = 0;
-      var calculo;
+      $("#minijogo").hide();
       //calculo de mensaje privado
       $("#ay").mousedown(function () {
           mini_start();
@@ -46,12 +49,18 @@
       });
 
 
-
       setInterval(function(){
         $(this).attr("title", "prueba chat");
         mostrar();
       }, 3000);
-
+      $("#enviar_privado").click(function () {
+        $("#minijogo").show();
+        if (!valido) valido = true;
+        setTimeout(function() {
+          $("#minijogo").hide();
+          valido = false;
+        },10000);
+      });
       $("#enviar").click(function () {
         if ($("#contenido").val() != "") {
           $.getJSON("<?= base_url() ?>" + "chats/escribir_mensajes/" + $("#contenido").val() + "/"+ $("#usuario").val());
@@ -77,30 +86,27 @@
 
     function mini_start() {
         //en caso de que se bugee
-        valor = 0;
+        if (valido && valor == 0) {
+          valor = 0;
 
-        $("#parr").css("background-color" , "red")
-        $("#mov").animate({left : "+=200"}, 500);
-        calculo = setInterval(function(){
-          valor+= 0.1;
-          $("#valor").val(valor*10);
-          if (valor > 5 && valor < 7) {
-            $("#parr").css("background-color" , "green");
-          } else if (valor > 3 && valor < 5) {
-            $("#parr").css("background-color" , "yellow");
-          } else if (valor > 7 && valor < 9) {
-            $("#parr").css("background-color" , "yellow");
-          } else $("#parr").css("background-color" , "red");
-        }, 1);
-        if (valor > 10) {
-          clearInterval(calculo);
+          $("#parr").css("background-color" , "red")
+          $("#mov").animate({left : "+=200"}, 500);
+          calculo = setInterval(function(){
+            valor+= 0.1;
+            $("#valor").val(valor*10);
+            if (valor > 5 && valor < 7) {
+              $("#parr").css("background-color" , "green");
+            } else if (valor > 3 && valor < 5) {
+              $("#parr").css("background-color" , "yellow");
+            } else if (valor > 7 && valor < 9) {
+              $("#parr").css("background-color" , "yellow");
+            } else $("#parr").css("background-color" , "red");
+          }, 1);
         }
     }
 
     function mini_stop() {
-      if (valor > 10) {
-        valor = 10;
-      }
+
       $("#mov").animate({left : "-=200"});
       $("#parr").css("background-color" , "red");
       var valor_final = Math.floor(valor * 10);
@@ -120,16 +126,19 @@
       <form>
         <input type="text" id="usuario" placeholder="Usuario"><br />
         <input type="text" id="contenido" placeholder="Escribe tu mensaje">
-        <input type="button" id="enviar" value="Enviar">
+        <input type="button" id="enviar" value="Enviar mensaje publico">
+        <input type="button" id="enviar_privado" value="Enviar mensaje privado">
       </form>
     </div>
     <div id="partida">
     </div>
   </div>
-  <div id="mov">
-    <p>-<span id="parr">o</span>-</p>
+  <div id="minijogo">
+    <div id="mov">
+      <p>-<span id="parr">o</span>-</p>
+    </div>
+    <button value="ay" id="ay">pulsa</button>
+      <input type="text" id="valor" placeholder="0"><br />
   </div>
-  <button value="ay" id="ay">pulsa</button>
-    <input type="text" id="valor" placeholder="0"><br />
 </body>
 </html>
