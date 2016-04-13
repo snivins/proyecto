@@ -1,0 +1,202 @@
+footer >  a > img {
+    width: 40px;
+    height: 40px;
+    margin-top: 5px;
+}
+footer > div {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+h1, h2, h3{
+    font-family: amatic sc;
+}
+
+h2 {
+    margin-left: 15%;
+}
+
+  #chat {
+    width: 400px;
+    padding: 10px;
+    max-height: 600;
+  }
+  #mensajes {
+    overflow: scroll;
+    overflow-x: hidden;
+    height: 380px;
+    max-height: 380px;
+  }
+  #juego {
+    width: 1120px;
+    display: flex;
+    background-image: url('../images/fondo.png');
+    background-size: contain;
+  }
+  #mov {
+    position: relative;
+    width: 100px;
+    border: 0px;
+  }
+  #parr{
+    background-color: red;
+  }
+@media screen and (min-width:800px){
+    nav > a:hover {
+        animation-name: resaltar;
+        animation-duration: 2s;
+        animation-iteration-count: infinite;
+        animation-direction: alternate;
+    }
+    @keyframes resaltar {
+        100% {
+            background-color: coral;
+            letter-spacing: 8px;
+        }
+    }
+    section > article > p {
+        font-size: 1.2em;
+        padding: 20px;
+    }
+    section > article {
+        padding: 30px;
+    }
+}
+@media screen and (max-width:799px){
+    nav > a:hover {
+        animation-name: resaltar;
+        animation-duration: 2s;
+        animation-iteration-count: infinite;
+        animation-direction: alternate;
+    }
+    @keyframes resaltar {
+        100% {
+            background-color: coral;
+            letter-spacing: 2px;
+        }
+    }
+    form , a {
+        font-size: 0.85em;
+    }
+
+    section > article > p {
+        font-size: 1em;
+        padding: 10px;
+    }
+    section > article {
+        padding: 20px;
+    }
+    section > div > img {
+        width: 80%;
+        height: 80%;
+    }
+}
+@media screen and (max-width:450px){
+    section > div > img {
+        width: 80%;
+        height: 80%;
+    }
+    nav > a:hover {
+        animation-name: resaltar;
+        animation-duration: 2s;
+        animation-iteration-count: infinite;
+        animation-direction: alternate;
+    }
+    @keyframes resaltar {
+        100% {
+            background-color: coral;
+        }
+    }
+    form , a {
+        font-size: 0.65em;
+    }
+    section > article {
+        padding: 10px;
+    }
+    section > article > p {
+        font-size: 0.8em;
+        padding: 5px;
+    }
+}
+header {
+    display: flex;
+    justify-content:space-between;
+    background: -webkit-linear-gradient(white, bisque);
+    box-shadow: 0px 50px 15px 10px bisque;
+}
+header > article {
+    display: flex;
+    justify-content: space-around;
+}
+nav {
+    display: flex;
+    justify-content: space-between;
+    background-color: bisque;
+}
+nav > a {
+    text-decoration: none;
+    border: 1px solid;
+    width: 100%;
+    text-align: center;
+    padding: 5px;
+}
+article > img {
+    width: 60px;
+    height: 60px;
+    margin-left: 10px;
+    box-shadow: 0px 0px 10px 4px black;
+}
+section {
+    background-color: bisque;
+    box-shadow: 0px 0px 50px 5px burlywood;
+}
+footer {
+    height: 50px;
+    background: -webkit-linear-gradient(burlywood, bisque);
+}
+header > article > form > input:first-child, header > article >form >input:nth-child(3) {
+    width: 80px;
+    height: 10px;
+}
+form > input {
+    margin: 2px;
+}/*
+section > article > p {
+    text-align: justify;
+}
+section > article {
+    margin: 5px;
+}*/
+div > a {
+    text-decoration: none;
+    text-align: center;
+    width: 150px;
+    padding: 10px;
+    border: 3px outset burlywood;
+    background-color: darksalmon;
+    font-weight: bold;
+    transition: transform 2s;
+}
+div > a:hover {
+    transform: scale(1.5 ,1.5)
+}
+div > a:active {
+    border: 3px inset burlywood ;
+}/*
+div {
+    display: flex;
+    justify-content: space-around;
+}*/
+header > img {
+    height: 70px;
+    margin: 5px;
+}
+section, header, nav, footer {
+    min-width: 400px;
+}
+footer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    color: darkred;
+}

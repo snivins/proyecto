@@ -8,7 +8,8 @@ class Chats extends CI_Controller {
 		$msj = $this->Chat->get_mensajes();
 		$data['msj'] = array_reverse($msj);
 
-	  $this->load->view('chat', $data);
+	  // $this->load->view('chat', $data);
+		$this->template->load('chat', $data);
   }
 
 	public function ver_mensajes()

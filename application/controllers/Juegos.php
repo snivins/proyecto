@@ -13,8 +13,7 @@ class Juegos extends CI_Controller {
 		$baraja = array_merge($baraja_oros, $baraja_copas, $baraja_espadas, $baraja_bastos);
 		shuffle($baraja);
 		$msj = $this->Juego->get_partidas_creadas();
-		var_dump($msj);
-		die();
-		$this->load->view('juego', $data);
+		/*var_dump($msj);*/
+		$this->template->load('juego');
 	}
 }

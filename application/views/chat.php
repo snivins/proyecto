@@ -1,36 +1,32 @@
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>prueba chat</title>
-  <style>
-    #chat {
-      width: 400px;
-      padding: 10px;
-      max-height: 600;
-    }
-    #mensajes {
-      overflow: scroll;
-      overflow-x: hidden;
-      height: 380;
-      max-height: 380;
-    }
-    #juego {
-      width: 1220px;
-      display: flex;
-      background-image: url('images/fondo.png');
-      background-size: contain;
-    }
-    #mov {
-      position: relative;
-      width: 100px;
-      border: 0px;
-    }
-    #parr{
-      background-color: red;
-    }
-  </style>
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js">
-  </script>
+<?php template_set('title', 'Chat time') ?>
+<body>
+    <div id="juego">
+      <div id="partida">
+
+        <canvas id="canvas" width="700" height="600" >
+        Your browser does not support the HTML5 canvas tag.</canvas>
+
+      </div>
+      <div id="chat">
+        <h2>Chat</h2>
+        <div id="mensajes">
+        </div>
+        <form>
+          <input type="text" id="usuario" placeholder="Usuario"><br />
+          <input type="text" id="contenido" placeholder="Escribe tu mensaje">
+          <input type="button" id="enviar" value="Enviar mensaje publico">
+          <input type="button" id="enviar_privado" value="Enviar mensaje privado"><br/>
+          <input type="button" id="rondo" value="Cuenta atras">
+        </form>
+      </div>
+  </div>
+  <div id="minijogo">
+    <div id="mov">
+      <p>-<span id="parr">o</span>-</p>
+    </div>
+    <button value="ay" id="ay">pulsa</button>
+    <input type="text" id="valor" placeholder="0"><br />
+  </div>
   <script>
   var tiempo;
 
@@ -58,8 +54,7 @@
       });
 
       $("#rondo").click(function () {
-          clearInterval(cuenta);
-          clearInterval(tiempo);
+          resetTimers();
           cuentaAtras();
       });
 
@@ -67,7 +62,6 @@
 
 
       setInterval(function(){
-        $(this).attr("title", "prueba chat");
         mostrar();
       }, 3000);
 
@@ -86,13 +80,18 @@
     //funciones
     function reloj() {
 
-      segs = 30;
+      segs = 30;//tiempo por turno
+
       tiempo = setInterval(function () {
         segs--;
       }, 1000);
     }
 
 
+    function resetTimers(){
+        clearInterval(cuenta);
+        clearInterval(tiempo);
+    }
     function mostrar() {
       $.getJSON("<?= base_url() ?>" + 'chats/ver_mensajes', pintar);
     }
@@ -103,33 +102,36 @@
         //pinta el circulo
         ctx.beginPath();
         ctx.strokeStyle= 'black';
-        ctx.arc(750, 50, 25, 0, 2 * Math.PI);
+        ctx.arc(650, 50, 25, 0, 2 * Math.PI);
         ctx.lineWidth  = 2;
         ctx.stroke();
         reloj();
         //fecha.setSeconds(0);
         cuenta = setInterval(function(){
           $("#canvas").stop(true,true);
-            total += 0.00029;
+            total = 2-((segs/30) * 2);
             // if (sec != secAntiguo) {
               ctx.beginPath();
               ctx.fillStyle= '#79CAF9';
-              ctx.arc(750, 50, 20, 0, 2 * Math.PI);
+              ctx.arc(650, 50, 20, 0, 2 * Math.PI);
               ctx.fill();
               ctx.font = "30px Arial";
               ctx.fillStyle= 'black';
               if (segs >= 0){
                 if (segs < 10) {
-                  ctx.fillText(segs,743,61);
+                  ctx.fillText(segs,643,61);
                 } else {
-                  ctx.fillText(segs,733,61);
+                  ctx.fillText(segs,633,61);
                 }
+              } else {
+                resetTimers();
               }
-            // }
+
+
             ctx.beginPath();
             ctx.strokeStyle= '#79CAF9';
             ctx.lineWidth   = 2;
-            ctx.arc(750, 50, 25, 1.5 * Math.PI, (1.5 + total) * Math.PI);
+            ctx.arc(650, 50, 25, 1.5 * Math.PI, (1.5 + total) * Math.PI);
             ctx.stroke();
         },1);
 
@@ -183,34 +185,3 @@
 
 
   </script>
-</head>
-<body>
-    <div id="juego">
-      <div id="chat">
-      <h2>Chat</h2>
-      <div id="mensajes">
-      </div>
-      <form>
-        <input type="text" id="usuario" placeholder="Usuario"><br />
-        <input type="text" id="contenido" placeholder="Escribe tu mensaje">
-        <input type="button" id="enviar" value="Enviar mensaje publico">
-        <input type="button" id="enviar_privado" value="Enviar mensaje privado"><br/>
-        <input type="button" id="rondo" value="Cuenta atras">
-      </form>
-    </div>
-    <div id="partida">
-
-      <canvas id="canvas" width="800" height="600" >
-      Your browser does not support the HTML5 canvas tag.</canvas>
-
-    </div>
-  </div>
-  <div id="minijogo">
-    <div id="mov">
-      <p>-<span id="parr">o</span>-</p>
-    </div>
-    <button value="ay" id="ay">pulsa</button>
-    <input type="text" id="valor" placeholder="0"><br />
-  </div>
-</body>
-</html>
