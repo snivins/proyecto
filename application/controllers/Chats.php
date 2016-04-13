@@ -21,7 +21,7 @@ class Chats extends CI_Controller {
 	public function escribir_mensajes($mensaje, $usuario = 'anonimo')
 	{
 		$valores = array(
-			'usuario' => $usuario,
+			'usuario' => urldecode($usuario),
 			'contenido' => urldecode($mensaje)
 		);
 		$this->Chat->insertar_mensaje($valores);

@@ -1,0 +1,10 @@
+#!/bin/bash
+
+source $OPENSHIFT_CARTRIDGE_SDK_BASH
+
+if [ ! -d ${OPENSHIFT_DATA_DIR}storage ]
+then
+    mkdir ${OPENSHIFT_DATA_DIR}storage
+    mkdir ${OPENSHIFT_DATA_DIR}storage/cache
+fi
+

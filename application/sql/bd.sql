@@ -60,7 +60,7 @@ prueba=> select prueba->>'carta' from json; devuelve mortadela
 create table jugadas (
   id bigserial constraint pk_jugadas primary key,
   turno bigserial not null,
-  ronda int not null, / para saber cuantas cartas repartir / ronda%3=0 => 3 cartas, ronda +1 % 3 => 2 cartas else 1 carta
+  ronda int not null, /* para saber cuantas cartas repartir / ronda%3=0 => 3 cartas, ronda +1 % 3 => 2 cartas else 1 carta*/
   dealer_id bigint constraint fk_jugadas_usuarios references usuarios(id),/*jug1, jug2 ,jug3 o jug4*/
   baraja text[], /*cartas barajadas/ array cartas tipo 1espada , 3basto, 4copas,12oro */
   vida varchar(20),/* "3oro" */
@@ -71,6 +71,7 @@ create table jugadas (
   jug_2 json not null,
   jug_3 json not null,
   jug_4 json not null
+);
 
   /*
 

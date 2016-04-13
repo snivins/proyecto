@@ -9,7 +9,7 @@ class Chat extends CI_Model
 
 	public function get_mensajes()
 	{
-    return $this->db->query('select * from mensajes order by id desc limit 10')->result_array();
+    return $this->db->query('select * from mensajes order by id desc limit 20')->result_array();
 	}
 
 	public function insertar_mensaje($valores)
