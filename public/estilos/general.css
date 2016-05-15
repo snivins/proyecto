@@ -32,6 +32,7 @@ h2 {
     display: flex;
     background-image: url('../images/fondo.png');
     background-size: contain;
+    border-radius: 25px;
   }
   #mov {
     position: relative;
@@ -156,7 +157,7 @@ footer {
 }
 header > article > form > input:first-child, header > article >form >input:nth-child(3) {
     width: 80px;
-    height: 10px;
+    height: 20px;
 }
 form > input {
     margin: 2px;
@@ -193,6 +194,9 @@ header > img {
 }
 section, header, nav, footer {
     min-width: 400px;
+}
+section {
+  min-height: 500px;
 }
 footer {
     display: flex;

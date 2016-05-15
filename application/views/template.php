@@ -23,7 +23,7 @@
     </head>
     <body><header>
             <a href="#cuerpo"><img src="images/logo.png" title="Inicio" alt="inicio" /></a>
-            <h1>Dungeons &amp; lizards</h1>
+            <h1>Rentoy motherfucker</h1>
             <article>
                 <form>
                     <input type="text" title="Usuario" name="user" placeholder="User" required><br />
@@ -35,18 +35,17 @@
             </article>
         </header>
         <nav>
-            <a href="index.html" title="Inicio">Home</a>
-            <a href="juego.html" title="Jugar ahora">Jugar</a>
+            <a href="<?= base_url() ?>" title="Inicio">Home</a>
+            <a href="<?= base_url() ?>juegos" title="Jugar ahora">Jugar</a>
             <a href="index.html" title="Aprende a jugar">Tutorial</a>
             <a href="index.html" title="Sobre nosotros">Acerca de</a>
             <a href="index.html" title="Videos and shit">Multimedia</a>
         </nav>
         <section id="cuerpo" class="container-fluid" >
           <div class="row">
-            <div >
-            <div class="col-md-1"></div>
+            <div class="col-sm-1"></div>
             <?= $contents ?>
-            </div>
+            <div class="col-sm-1"></div>
           </div>
         </section>
         <hr />

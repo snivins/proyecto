@@ -1,5 +1,4 @@
 <?php template_set('title', 'Chat time') ?>
-<body>
     <div id="juego">
       <div id="partida">
 
@@ -29,7 +28,7 @@
   </div>
   <script>
   var tiempo;
-
+  var turno = 60;//tiempo en segundos del turno
     var valor = 0;
     var calculo;
     var cuenta;
@@ -58,9 +57,15 @@
           cuentaAtras();
       });
 
+      /*
+      var img = new Image();
+      img.onload= drawImageScaled.bind(null, img, ctx);
+      img.src =
+      ctx.drawImage(img, 0, 0, img.width,    img.height,    // source rectangle
+                         0, 0, canvas.width, canvas.height  // d
 
 
-
+*/
       setInterval(function(){
         mostrar();
       }, 3000);
@@ -80,7 +85,7 @@
     //funciones
     function reloj() {
 
-      segs = 30;//tiempo por turno
+      segs = turno;//tiempo por turno
 
       tiempo = setInterval(function () {
         segs--;
@@ -109,7 +114,7 @@
         //fecha.setSeconds(0);
         cuenta = setInterval(function(){
           $("#canvas").stop(true,true);
-            total = 2-((segs/30) * 2);
+            total = 2-((segs/turno) * 2);
             // if (sec != secAntiguo) {
               ctx.beginPath();
               ctx.fillStyle= '#79CAF9';
@@ -119,6 +124,7 @@
               ctx.fillStyle= 'black';
               if (segs >= 0){
                 if (segs < 10) {
+                  ctx.fillStyle= 'red';
                   ctx.fillText(segs,643,61);
                 } else {
                   ctx.fillText(segs,633,61);
@@ -140,9 +146,12 @@
 
     function enviar () {
       if ($("#contenido").val() != "") {
-        $.getJSON("<?= base_url() ?>" + "chats/escribir_mensajes/" + $("#contenido").val() + "/"+ $("#usuario").val());
+        $.post("<?= base_url() ?>" + "chats/escribir_mensajes/", {
+          contenido : $("#contenido").val(),
+          usuario :  $("#usuario").val()
+        }, mostrar());
+        //$.getJSON("<?= base_url() ?>" + "chats/escribir_mensajes/" + $("#contenido").val() + "/"+ $("#usuario").val());
         $("#contenido").val("");
-        mostrar();
       } else {
         alert('Debes introducir un comentario');
       }
@@ -152,6 +161,7 @@
       for (var cosa in r){
         $('#mensajes').append('<p><i><b>'+r[cosa].usuario+':</i></b> '+r[cosa].contenido + '</p>');
       }
+      $("#mensajes").animate({ scrollTop: $(document).height() }, 1000);
     }
 
     function mini_start() {
