@@ -11,13 +11,14 @@ drop table if exists usuarios cascade;
 create table usuarios (
   id bigserial constraint pk_usuarios primary key,
   nick varchar(30) constraint uq_usuarios unique,
-  password varchar(30) not null
+  password varchar(30) not null,
+  posicion varchar(30)
 );
-insert into usuarios(nick,password) values
-  ('sniv','sniv'),
-  ('juan','juan'),
-  ('pepe','pepe'),
-  ('mimi','mimi');
+insert into usuarios(nick,password,posicion) values
+  ('sniv','sniv','jug_1'),
+  ('juan','juan','jug_2'),
+  ('pepe','pepe','jug_3'),
+  ('mimi','mimi',NULL);
 
 
 drop table if exists partidas cascade;

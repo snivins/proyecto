@@ -6,7 +6,6 @@ class Juego extends CI_Model
 			 parent::__construct();
 	}
 
-
 	public function get_partidas_creadas()
 	{
     return $this->db->query("select * from partidas where estado = 'creada'")->result_array();
@@ -22,6 +21,14 @@ class Juego extends CI_Model
 		return $this->db->query("select estado from partidas where
 														estado != 'terminada' AND (jug_1 = $id OR
 														jug_2 = $id OR jug_3 = $id OR jug_4 = $id )")->row_array();
+	}
+	public function get_estado_partida($valores)
+	{
+		$posicion = $valores['posicion'];
+		$id_partida = $valores['id_partida'];
+		return $this->db->query("select id, vida, cartas_jugadas, puntos_ronda,
+		 												puntos_totales, $posicion
+														from jugadas where id_partida= $id_partida order by id desc")->row_array();
 	}
 
 	public function set_estado($valores)
@@ -40,7 +47,8 @@ class Juego extends CI_Model
 	}
 	public function get_info($id_partida)
 	{
-		return $this->db->query("select * from partidas where id_partida=$id_partida");
+		return $this->db->query("select * from partidas
+															where id_partida=$id_partida")->row_array();
 	}
 
 	public function unirse($valores)
@@ -58,6 +66,7 @@ class Juego extends CI_Model
 			$jugador = array(
 				'jug_1' => $valores['id']
 			);
+			$this->Usuario->set_posicion($valores['id'], "jug_1");
 			return $this->db->where('id_partida', $id_partida)->update('partidas', $jugador);
 		} else {
 			$existe = $this->db->query("select * from partidas
@@ -68,6 +77,7 @@ class Juego extends CI_Model
 				$jugador = array(
 					'jug_2' => $valores['id']
 				);
+				$this->Usuario->set_posicion($valores['id'], "jug_2");
 				return $this->db->where('id_partida', $id_partida)->update('partidas', $jugador);
 			} else {
 				$existe = $this->db->query("select * from partidas
@@ -79,6 +89,7 @@ class Juego extends CI_Model
 					$jugador = array(
 						'jug_3' => $valores['id']
 					);
+					$this->Usuario->set_posicion($valores['id'], "jug_3");
 					return $this->db->where('id_partida', $id_partida)->update('partidas', $jugador);
 				} else {
 					$existe = $this->db->query("select * from partidas
@@ -89,6 +100,7 @@ class Juego extends CI_Model
 						$jugador = array(
 							'jug_4' => $valores['id']
 						);
+						$this->Usuario->set_posicion($valores['id'], "jug_4");
         		return $this->db->where('id_partida', $id_partida)->update('partidas', $jugador);
 					} else {
 						return false;

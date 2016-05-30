@@ -6,17 +6,14 @@ class Juegos extends CI_Controller {
 
 	public function index()
 	{
-		$baraja_oros = array('1oros', '2oros', '3oros', '4oros', '5oros', '6oros', '7oros', '10oros', '11oros', '12oros');
-		$baraja_copas = array('1copas', '2copas', '3copas', '4copas', '5copas', '6copas', '7copas', '10copas', '11copas', '12copas');
-		$baraja_espadas = array('1espadas', '2espadas', '3espadas', '4espadas', '5espadas', '6espadas', '7espadas', '10espadas', '11espadas', '12espadas');
-		$baraja_bastos = array('1bastos', '2bastos', '3bastos', '4bastos', '5bastos', '6bastos', '7bastos', '10bastos', '11bastos', '12bastos');
-		$baraja = array_merge($baraja_oros, $baraja_copas, $baraja_espadas, $baraja_bastos);
-		shuffle($baraja);
+
 		$numero = 0;
 		$carta['carta_uno'] = $numero;
 		$carta['carta_dos'] = $numero;
 		$jug_actual = 'jug_'.$numero;
-		echo(json_encode($baraja));
+		$valores['posicion']=$this->Usuario->get_posicion(1)['posicion'];
+		var_dump($valores);
+		//echo(json_encode($baraja));
 		$msj = $this->Juego->get_partidas_creadas();/*
 		$id = 1;
 		$estado = json_encode($this->Juego->get_estado($id));
@@ -44,10 +41,14 @@ class Juegos extends CI_Controller {
 	}
 	public function get_estado_partida()
 	{
+		$valores['id_partida']= $_REQUEST['id_partida'];
+		$valores['posicion']=$this->Usuario->get_posicion($_REQUEST['id'])['posicion'];
+		$situacion = $this->Juego->get_estado_partida($valores);
 
 		if (!isset($_REQUEST['jugada'])) {
 			//echo(json_encode(array('juega'=>'no')));
-			
+			echo(json_encode($situacion));
+
 		}
 	}
 
@@ -86,7 +87,7 @@ class Juegos extends CI_Controller {
 					} elseif ($i == 1) {
 						$datos_jug['estado'] = 'defensa';
 					} else {
-						$datos_jug['estado'] = 'esperando';
+						$datos_jug['estado'] = 'esperando_turno';
 					}
 					$datos_jug['carta_uno'] = $baraja[count($datos['cartas_jugadas'])+$i];//sabre q cartas tngo en cliente con .hasOwnProperty()
 					$jug_actual = 'jug_'.$numero;
