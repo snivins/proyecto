@@ -6,22 +6,24 @@
   <button id="unirse1" >Unirse a partida</button>
   <p id="estado1"><p>
   <p id="estado_partida1"><p>
-  <p>Carta1: <span id="1carta1"></span>, Carta2: <span id="1carta2"></span>, Carta3: <span id="1carta3"></span><p>
+  <p>Carta1: <button id="1carta1"></button>, Carta2: <button id="1carta2"></button>, Carta3: <button id="1carta3"></button><p>
   <h3>Situación actual jugador 2</h3>
   <button id="unirse2" >Unirse a partida</button>
   <p id="estado2"><p>
   <p id="estado_partida2"><p>
-  <p>Carta1: <span id="2carta1"></span>, Carta2: <span id="2carta2"></span>, Carta3: <span id="2carta3"></span><p>
+  <p>Carta1: <button class="2cartas" id="2carta1"></button>, Carta2: <button class="2cartas" id="2carta2"></button>, Carta3: <button class="2cartas" id="2carta3"></button><p>
+  <p>Acciones</p>
+  <button class="ataque" id="boton_envio">Envio</button>
   <h3>Situación actual jugador 3</h3>
   <button id="unirse3" >Unirse a partida</button>
   <p id="estado3"><p>
   <p id="estado_partida3"><p>
-  <p>Carta1: <span id="3carta1"></span>, Carta2: <span id="3carta2"></span>, Carta3: <span id="3carta3"></span><p>
+  <p>Carta1: <button id="3carta1"></button>, Carta2: <button id="3carta2"></button>, Carta3: <button id="3carta3"></button><p>
   <h3>Situación actual jugador 4</h3>
   <button id="unirse4" >Unirse a partida</button>
   <p id="estado4"><p>
   <p id="estado_partida4"><p>
-  <p>Carta1: <span id="4carta1"></span>, Carta2: <span id="4carta2"></span>, Carta3: <span id="4carta3"></span><p>
+  <p>Carta1: <button id="4carta1"></button>, Carta2: <button id="4carta2"></button>, Carta3: <button id="4carta3"></button><p>
 </div>
 
 <script>
@@ -101,18 +103,20 @@ function pintar_partida(r) {
     var estado_jug = $.parseJSON(estado.jug_4);
   }
 
-
+  $('#cosas').text(estado.cartas_jugadas);
   $('#estado_partida1').text(estado_jug.estado);
   $('#1carta1').text(estado_jug.carta_uno);
   if(estado_jug.hasOwnProperty("carta_dos")){
+    $('#1carta2').show();
     $('#1carta2').text(estado_jug.carta_dos);
   } else {
-    $('#1carta2').text("no tiene");
+    $('#1carta2').hide();
   }
   if(estado_jug.hasOwnProperty("carta_tres")){
+    $('#1carta3').show();
     $('#1carta3').text(estado_jug.carta_tres);
   } else {
-    $('#1carta3').text("no tiene");
+    $('#1carta3').hide();
   }
 }
 
@@ -133,17 +137,30 @@ function pintar_partida2(r) {
   }
 
 
+  if (estado_jug.estado == "ataque"){
+    $('.2cartas').click(function () {
+      alert($('#'+this.id).text());
+      $.post("<?= base_url() ?>" + 'juegos/nueva_jugada', {
+        id : "2",
+        id_partida: "1",
+        movimiento: $('#'+this.id).text()
+      } );
+    });
+  }
   $('#estado_partida2').text(estado_jug.estado);
   $('#2carta1').text(estado_jug.carta_uno);
+
   if(estado_jug.hasOwnProperty("carta_dos")){
+    $('#2carta2').show();
     $('#2carta2').text(estado_jug.carta_dos);
   } else {
-    $('#2carta2').text("no tiene");
+    $('#2carta2').hide();
   }
   if(estado_jug.hasOwnProperty("carta_tres")){
+    $('#2carta3').show();
     $('#2carta3').text(estado_jug.carta_tres);
   } else {
-    $('#2carta3').text("no tiene");
+    $('#2carta3').hide();
   }
 }
 function pintar_partida3(r) {
