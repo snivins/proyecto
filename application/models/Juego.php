@@ -15,20 +15,34 @@ class Juego extends CI_Model
 	{
 		return $this->db->insert('jugadas', $valores);
 	}
-
+	public function get_jug_id($pos_jug,$id_partida){
+		return $this->db->query("select $pos_jug from partidas where
+														id_partida = $id_partida")->row_array();
+	}
 	public function get_estado($id)
 	{
 		return $this->db->query("select estado from partidas where
 														estado != 'terminada' AND (jug_1 = $id OR
 														jug_2 = $id OR jug_3 = $id OR jug_4 = $id )")->row_array();
 	}
-	public function get_estado_partida($valores)
+	public function get_estado_jugador($valores)
 	{
 		$posicion = $valores['posicion'];
 		$id_partida = $valores['id_partida'];
 		return $this->db->query("select id, vida, cartas_jugadas, puntos_ronda,
-		 												puntos_totales, $posicion
+		 												puntos_equipo_1,puntos_equipo_2, $posicion, puntos_pendientes
 														from jugadas where id_partida= $id_partida order by id desc")->row_array();
+	}
+	public function get_estado_partida($id_partida)
+	{
+		return $this->db->query("select id_partida,turno, ronda, turno_ronda, dealer_id, vida,
+														baraja, cartas_jugadas, puntos_ronda,	puntos_equipo_1,puntos_equipo_2,
+														jug_1,jug_2,jug_3,jug_4,puntos_pendientes	from jugadas
+														where id_partida= $id_partida order by id desc")->row_array();
+	}
+	public function set_jugada($valores){
+
+		$this->db->where('id', $valores['id'])->update('jugadas', $valores);
 	}
 
 	public function set_estado($valores)

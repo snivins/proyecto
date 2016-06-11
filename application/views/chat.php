@@ -72,14 +72,13 @@
 
       $("#enviar_privado").click(function () {
         $("#minijogo").show();
-        if (!valido) valido = true;
         setTimeout(function() {
           $("#minijogo").hide();
-          valido = false;
         },10000);
       });
 
       $("#enviar").click(enviar);
+      aylmao();
     });
 
     //funciones
@@ -100,7 +99,76 @@
     function mostrar() {
       $.getJSON("<?= base_url() ?>" + 'chats/ver_mensajes', pintar);
     }
+    function aylmao(){
+      var valido = false;
+      $('canvas').drawRect({
+        layer: true,
+        strokeStyle: '#c33',
+        strokeWidth: 4,
+        x: 150, y: 100,
+        width: 200,
+        height: 100,
+        cornerRadius: 10,
+        mouseover: function(layer) {
+          $(this).animateLayer(layer, {
+              shadowColor: '#000',
+              shadowBlur: 10,
+          }, 0);
+        },
+        mouseout: function(layer) {
+          $(this).animateLayer(layer, {
+              shadowColor: '#F00',
+              shadowBlur: 0,
+          }, 0);
+        }
+      });
+      $('canvas').drawImage({
+        draggable: true,
+        name: 'carta1',
+        source: 'images/baraja/01_oros.png',
+        x: 150, y: 150,
+        height: 120,
+        bringToFront: true,
+        width: 80,
+        mouseover: function(layer) {
+          $(this).animateLayer(layer, {
+              shadowColor: '#000',
+              shadowBlur: 10,
+          }, 0);
+        },
+        mouseout: function(layer) {
+          $(this).animateLayer(layer, {
+              shadowColor: '#F00',
+              shadowBlur: 0,
+          }, 0);
+        }
+      });
+        $('canvas').drawImage({
+          draggable: true,
+          name: 'carta2',
+          source: 'images/baraja/02_oros.png',
+          x: 100, y: 100,
+          height: 120,
+          bringToFront: true,
+          width:80,
+          mouseover: function(layer) {
+            $(this).animateLayer(layer, {
+                shadowColor: '#000',
+                shadowBlur: 10,
+            }, 0);
+          },
+          mouseout: function(layer) {
+            $(this).animateLayer(layer, {
+                shadowColor: '#F00',
+                shadowBlur: 0,
+            }, 0);
+          }
+
+          });
+    }
+
     function cuentaAtras() {
+       aylmao();
         var canvas = document.getElementById("canvas");
         var ctx = canvas.getContext("2d");
         var total = 0;
@@ -109,9 +177,23 @@
         ctx.strokeStyle= 'black';
         ctx.arc(650, 50, 25, 0, 2 * Math.PI);
         ctx.lineWidth  = 2;
-        ctx.stroke();
+
+
         reloj();
+                ctx.shadowColor   = '#666';
+                ctx.shadowOffsetX = 3;
+                ctx.shadowOffsetY = 3;
+                ctx.shadowBlur    = 3;
+                ctx.stroke();
+                ctx.beginPath();
+
+                ctx.shadowColor   = '#FFF';
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 0;
+                ctx.shadowBlur    = 0;
         //fecha.setSeconds(0);
+                ctx.stroke();
+                ctx.beginPath();
         cuenta = setInterval(function(){
           $("#canvas").stop(true,true);
             total = 2-((segs/turno) * 2);

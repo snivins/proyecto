@@ -2,28 +2,32 @@
 
 <div id="partida">
 <p id="cosas"><p>
+
+  <p>Jugando por <span id="puntosPen"></span><p>
+  <p>Equipo 1: <span id="puntos1"></span><p>
+  <p>Equipo 2: <span id="puntos2"></span><p>
   <h3>Situación actual jugador 1</h3>
   <button id="unirse1" >Unirse a partida</button>
   <p id="estado1"><p>
   <p id="estado_partida1"><p>
-  <p>Carta1: <button id="1carta1"></button>, Carta2: <button id="1carta2"></button>, Carta3: <button id="1carta3"></button><p>
+  <p>Carta1: <button class="acciones" id="1carta1"></button>, Carta2: <button iclass="acciones" id="1carta2"></button>, Carta3: <button class="acciones" id="1carta3"></button><p>
   <h3>Situación actual jugador 2</h3>
   <button id="unirse2" >Unirse a partida</button>
   <p id="estado2"><p>
   <p id="estado_partida2"><p>
-  <p>Carta1: <button class="2cartas" id="2carta1"></button>, Carta2: <button class="2cartas" id="2carta2"></button>, Carta3: <button class="2cartas" id="2carta3"></button><p>
+  <p>Carta1: <button class="2acciones" id="2carta1"></button>, Carta2: <button class="2acciones" id="2carta2"></button>, Carta3: <button class="2acciones" id="2carta3"></button><p>
   <p>Acciones</p>
-  <button class="ataque" id="boton_envio">Envio</button>
+  <button class="2acciones" id="boton_envio">Envio</button>
   <h3>Situación actual jugador 3</h3>
   <button id="unirse3" >Unirse a partida</button>
   <p id="estado3"><p>
   <p id="estado_partida3"><p>
-  <p>Carta1: <button id="3carta1"></button>, Carta2: <button id="3carta2"></button>, Carta3: <button id="3carta3"></button><p>
+  <p>Carta1: <button class="3acciones" id="3carta1"></button>, Carta2: <button class="3acciones" id="3carta2"></button>, Carta3: <button class="3acciones" id="3carta3"></button><p>
   <h3>Situación actual jugador 4</h3>
   <button id="unirse4" >Unirse a partida</button>
   <p id="estado4"><p>
   <p id="estado_partida4"><p>
-  <p>Carta1: <button id="4carta1"></button>, Carta2: <button id="4carta2"></button>, Carta3: <button id="4carta3"></button><p>
+  <p>Carta1: <button class="4acciones" id="4carta1"></button>, Carta2: <button class="4acciones" id="4carta2"></button>, Carta3: <button class="4acciones" id="4carta3"></button><p>
 </div>
 
 <script>
@@ -103,12 +107,26 @@ function pintar_partida(r) {
     var estado_jug = $.parseJSON(estado.jug_4);
   }
 
+    if (estado_jug.estado == "ataque"){
+      $('.acciones').click(function () {
+        $.post("<?= base_url() ?>" + 'juegos/nueva_jugada', {
+          id : "1",
+          id_partida: "1",
+          movimiento: $('#'+this.id).text()
+        } );
+      });
+    }
+  $('#puntos1').text(estado.puntos_equipo_1);
+$('#puntos2').text(estado.puntos_equipo_2);
+var puntos_actuales = parseInt(estado.puntos_pendientes)+ parseInt(estado.puntos_ronda);
+$('#puntosPen').text(puntos_actuales + " puntos");
+
   $('#cosas').text(estado.cartas_jugadas);
   $('#estado_partida1').text(estado_jug.estado);
   $('#1carta1').text(estado_jug.carta_uno);
   if(estado_jug.hasOwnProperty("carta_dos")){
     $('#1carta2').show();
-    $('#1carta2').text(estado_jug.carta_dos);
+      $('#1carta2').text(estado_jug.carta_dos);
   } else {
     $('#1carta2').hide();
   }
@@ -138,8 +156,7 @@ function pintar_partida2(r) {
 
 
   if (estado_jug.estado == "ataque"){
-    $('.2cartas').click(function () {
-      alert($('#'+this.id).text());
+    $('.2acciones').click(function () {
       $.post("<?= base_url() ?>" + 'juegos/nueva_jugada', {
         id : "2",
         id_partida: "1",
@@ -179,6 +196,15 @@ function pintar_partida3(r) {
     var estado_jug = $.parseJSON(estado.jug_4);
   }
 
+    if (estado_jug.estado == "ataque"){
+      $('.3acciones').click(function () {
+        $.post("<?= base_url() ?>" + 'juegos/nueva_jugada', {
+          id : "3",
+          id_partida: "1",
+          movimiento: $('#'+this.id).text()
+        } );
+      });
+    }
 
   $('#estado_partida3').text(estado_jug.estado);
   $('#3carta1').text(estado_jug.carta_uno);
@@ -209,6 +235,15 @@ function pintar_partida4(r) {
     var estado_jug = $.parseJSON(estado.jug_4);
   }
 
+    if (estado_jug.estado == "ataque"){
+      $('.4acciones').click(function () {
+        $.post("<?= base_url() ?>" + 'juegos/nueva_jugada', {
+          id : "4",
+          id_partida: "1",
+          movimiento: $('#'+this.id).text()
+        } );
+      });
+    }
 
   $('#cosas').text(estado.jug_1);
   $('#estado_partida4').text(estado_jug.estado);

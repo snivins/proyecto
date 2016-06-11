@@ -20,6 +20,7 @@
         <link rel=stylesheet href="estilos/general.css" type="text/css">
         <link href='https://fonts.googleapis.com/css?family=Amatic+SC' rel='stylesheet' type='text/css'>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script src="js/jcanvas.min.js"></script>
     </head>
     <body><header>
             <a href="#cuerpo"><img src="images/logo.png" title="Inicio" alt="inicio" /></a>

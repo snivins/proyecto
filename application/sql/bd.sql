@@ -38,7 +38,7 @@ creo partida, soy jug_1, estado 'creada' (pueden unirse a la partida)
 */
 
 
-insert into partidas(estado,jug_1, jug_2, jug_3) values ('creada', 1,2,3);
+insert into partidas(estado,jug_1,jug_2,jug_3) values ('creada', 1,2,3);
 drop table if exists ci_sessions cascade;
 
 create table "ci_sessions" (
@@ -69,14 +69,18 @@ drop table if exists jugadas cascade;
 create table jugadas (
   id bigserial constraint pk_jugadas primary key,
   id_partida bigint constraint fk_jugadas_partidas references partidas(id_partida),
-  turno bigserial not null,
+  turno int not null,
   ronda int not null, /* para saber cuantas cartas repartir / ronda%3=0 => 3 cartas, ronda +1 % 3 => 2 cartas else 1 carta*/
-  dealer_id bigint constraint fk_jugadas_usuarios references usuarios(id),/*jug1, jug2 ,jug3 o jug4*/
+  turno_ronda int not null,/*de 1 a 4*/
+  dealer_id varchar(10),/*jug1, jug2 ,jug3 o jug4*/
   baraja json, /*cartas barajadas/ array cartas tipo 1espada , 3basto, 4copas,12oro */
   vida varchar(20),/* "3oro" */
   cartas_jugadas json,/*solo las cartas jugadas y activas en el turno se renueva tras una ronda con 3 cartas*/
+  ultima_mano json,/*cartas en mesa pero que no cuentan*/
+  puntos_pendientes numeric(30) not null default 0,
   puntos_ronda numeric(30) not null default 1,/*en caso de que envie y acepte, se guarda aqui el total*/
-  puntos_totales numeric(80),
+  puntos_equipo_1 numeric(80),
+  puntos_equipo_2 numeric(80),
   jug_1 json not null,
   jug_2 json not null,
   jug_3 json not null,
@@ -84,6 +88,38 @@ create table jugadas (
 );
 
   /*
+
+id : 1
+id_partida:2
+jugada: 4_oros          |Varios casos posibles,
+
+
+-caso de una carta bocarriba:
+  cartas jugadas + 4 de oros
+  turno ++
+  turno_ronda++ //2 casos, si turno_ronda es <4 y si es 4
+  -caso de <4:
+      se cambia el estado de los jugadores, pasa de ataque a sperando, de defensa a ataque y d sperando a defensa
+  -caso de 4:
+      calculo cartas
+      añadir puntuacion
+      puntos_ronda = 0
+      ronda++  //caso ronda con cartas nuevas o sin barajar
+      -caso sin barajar:
+          se actualiza el estado de los jugadores con cartas de la baraja tras las ya repartidas
+      -caso con barajar:
+          se actualiza la baraja, la vida y se reparte 1 o 3 cartas segun puntos
+
+  dealer_id +1, s
+
+
+
+
+
+
+
+
+
 
   jug_1 '{ "estado": "esperando_turno","carta1" : "4basto", "carta2" : "3basto"}' si solo tiene 2 cartas
   estado: (ataque, defensa, esperando_turno)
