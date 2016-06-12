@@ -17,29 +17,44 @@
               crossorigin="anonymous">
 
         <!-- Estilo propio -->
-        <link rel=stylesheet href="estilos/general.css" type="text/css">
+        <link rel=stylesheet href="/estilos/general.css" type="text/css">
         <link href='https://fonts.googleapis.com/css?family=Amatic+SC' rel='stylesheet' type='text/css'>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+        <script src="js/jquery.min.js"></script>
         <script src="js/jcanvas.min.js"></script>
     </head>
     <body><header>
-            <a href="#cuerpo"><img src="images/logo.png" title="Inicio" alt="inicio" /></a>
-            <h1>Rentoy motherfucker</h1>
+            <a href="#cuerpo"><img src="/images/logo.png" title="Inicio" alt="inicio" /></a>
+            <h1>Rentoy time!!</h1>
             <article>
-                <form>
-                    <input type="text" title="Usuario" name="user" placeholder="User" required><br />
-                    <input type="password" title="Password" name="pass" placeholder="Password" required><br />
-                    <input type="submit" value="Login">
-                    <a  href="registro.html" title="Registrarse">Registrate</a>
-                </form>
-                <img src="images/fotoPerfil.png" title="Foto de perfil" alt="Profile picture"/>
+              <?php if (!logueado()): ?>
+                <?= form_open('usuarios/login') ?>
+                  <div class="form-group">
+                    <?= form_label('Nick:', 'nick') ?>
+                    <?= form_input('nick', set_value('nick', '', FALSE),
+                                   'id="nick" ') ?>
+                  </div>
+                  <div class="form-group">
+                    <?= form_label('Contraseña:', 'password') ?>
+                    <?= form_password('password', '',
+                                      'id="password" ') ?>
+                  </div>
+                  <?= form_submit('login', 'Login') ?>
+                  <?= anchor('/usuarios/registrar', 'Registrate', ' role="button"') ?>
+                <?= form_close() ?>
+
+              <?php else: ?>
+                    <p>Bienvenido <?= nick(usuario_id())?></p>
+                    <a  href="<?= base_url() ?>usuarios/logout" title="Logout">Salir</a>
+              <?php endif;?>
+                <img src="/images/fotoPerfil.png" title="Foto de perfil" alt="Profile picture"/>
+
             </article>
         </header>
         <nav>
             <a href="<?= base_url() ?>" title="Inicio">Home</a>
             <a href="<?= base_url() ?>juegos" title="Jugar ahora">Jugar</a>
             <a href="index.html" title="Aprende a jugar">Tutorial</a>
-            <a href="index.html" title="Sobre nosotros">Acerca de</a>
+            <a href="<?= base_url() ?>usuarios/cuenta" title="Cuenta de usuario">Perfil</a>
             <a href="index.html" title="Videos and shit">Multimedia</a>
         </nav>
         <section id="cuerpo" class="container-fluid" >
@@ -54,8 +69,8 @@
 
             <h4>Webmaster: Sniv</h4>
             <h4>e-mail: sniv@gmail.com</h4>
-            <a href="http://www.twitter.com"><img alt="twitter" src="images/Twitter_logo_blue.png" ></a>
-            <a href="http://www.facebook.com"><img alt="facebook" src="images/facebook%20logo%20vector.png" ></a>
+            <a href="http://www.twitter.com"><img alt="twitter" src="/images/Twitter_logo_blue.png" ></a>
+            <a href="http://www.facebook.com"><img alt="facebook" src="/images/facebook%20logo%20vector.png" ></a>
         </footer>
         <!-- Latest compiled and minified JavaScript -->
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"

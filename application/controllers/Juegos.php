@@ -21,7 +21,7 @@ class Juegos extends CI_Controller {
 		$carta_jugada[] = json_decode($datos['cartas_jugadas']);
 
 		$vida = json_decode($datos['cartas_jugadas'])[0];
-				var_dump($this->Juego->get_jug_id("jug_3", 1));
+				var_dump($this->session->userdata('usuario')['id']);
 						var_dump(substr($vida,0,2));
 				var_dump("02"==2);
 				var_dump($num_sig);
@@ -47,7 +47,7 @@ class Juegos extends CI_Controller {
 
 	public function get_estado()
 	{
-		$id = $_REQUEST['id'];
+		$id = $_REQUEST['id'];//$this->session->userdata('usuario')['id']
 		$estado = json_encode($this->Juego->get_estado($id));
 		echo($estado);
 	}
@@ -66,7 +66,7 @@ class Juegos extends CI_Controller {
 
 	public function nueva_jugada()
 	{
-		$valores['id'] = $_REQUEST['id'];
+		$valores['id'] = $_REQUEST['id'];//$this->session->userdata('usuario')['id']
 		$valores['id_partida'] = $_REQUEST['id_partida'];
 		$valores['movimiento'] = $_REQUEST['movimiento'];
 		$posicion = $this->Usuario->get_posicion($valores['id'])['posicion'];
@@ -90,19 +90,136 @@ class Juegos extends CI_Controller {
 			$this->Juego->insertar_jugada($datos);
 
 		}	else if ($valores['movimiento'] === 'Quiero') {
+			if ($datos['puntos_ronda'] > 1) {
+				$datos['puntos_ronda'] += $datos['puntos_pendientes'];
+			} else {
 				$datos['puntos_ronda'] = $datos['puntos_pendientes'];
-				$datos['puntos_pendientes'] = 0;
+			}
 				$valores_jugador['estado'] = 'esperando_turno';
 				$datos[$posicion] = json_encode($valores_jugador);
 				$sig_jug = substr($posicion,strpos($posicion,'_')+1);
-				$sig_jug -=1;
-				if ($sig_jug < 1) $sig_jug+=4;
-				$sig_jug = 'jug_'.$sig_jug;
+				if ($datos['puntos_pendientes'] % 6 == 0){//para ver si es el jugador q envio inicialmente
+					$sig_jug = 'jug_'.$sig_jug;
+				} else {
+					$sig_jug -=1;
+					if ($sig_jug < 1) $sig_jug+=4;
+					$sig_jug = 'jug_'.$sig_jug;
+				}
+				$datos['puntos_pendientes'] = 0;
 				$jugador_defensa = json_decode($datos[$sig_jug],true);
 				$jugador_defensa['estado'] = 'ataque';
 				$datos[$sig_jug] = json_encode($jugador_defensa);
 				$this->Juego->insertar_jugada($datos);
-		} else if ($valores['movimiento'] !== 'Mas'){
+		} else if ($valores['movimiento'] === 'Mas'){
+				$valores_jugador['estado'] = 'esperando_turno';
+				$datos[$posicion] = json_encode($valores_jugador);
+				$sig_jug = substr($posicion,strpos($posicion,'_')+1);
+				if ($datos['puntos_pendientes'] % 6 == 0){//para ver si es el jugador q envio inicialmente
+					$sig_jug +=1;
+					if ($sig_jug > 4) $sig_jug-=4;
+					$sig_jug = 'jug_'.$sig_jug;
+				} else {
+					$sig_jug -=1;
+					if ($sig_jug < 1) $sig_jug+=4;
+					$sig_jug = 'jug_'.$sig_jug;
+				}
+				$datos['puntos_pendientes']+=3;
+				$jugador_defensa = json_decode($datos[$sig_jug],true);
+				$jugador_defensa['estado'] = 'defensa';
+				$datos[$sig_jug] = json_encode($jugador_defensa);
+				$this->Juego->insertar_jugada($datos);
+		} else if ($valores['movimiento'] === 'Paso'){
+			if ($datos['puntos_pendientes'] > 3){
+				if ($datos['puntos_ronda'] > 1){
+					$datos['puntos_ronda'] += $datos['puntos_pendientes'] - 3;
+				}
+				$datos['puntos_ronda'] = $datos['puntos_pendientes'] - 3;
+			}
+			//ver equipo q dice paso y darle los puntos al otro
+			if ($posicion !== 'jug_1' && $posicion !== 'jug_3'){
+				$datos['puntos_equipo_1']+=$datos['puntos_ronda'];
+			} else {
+				$datos['puntos_equipo_2']+=$datos['puntos_ronda'];
+			}
+			$datos['puntos_ronda'] = 1;
+			$datos['puntos_pendientes'] = 0;
+			$sig_dealer =  $this->Usuario->get_posicion($datos['dealer_id'])['posicion'];
+			$sig_dealer = substr($sig_dealer, strpos($sig_dealer,'_')+1);
+			$sig_dealer++;
+			if ($sig_dealer > 4) $sig_dealer-=4;
+			$sig_dealer = 'jug_'.$sig_dealer;
+
+			$datos['dealer_id'] = $this->Juego->get_jug_id($sig_dealer, $valores['id_partida'])[$sig_dealer];
+
+			$datos['turno_ronda'] = 1;
+
+			$sig_jug = substr($sig_dealer, strpos($sig_dealer,'_')+1);
+			$sig_jug++;
+			if ($sig_jug > 4) $sig_jug-=4;
+			$sig_jug = 'jug_'.$sig_jug;
+			$sig_jug_estado = json_decode($datos[$sig_jug],true);
+			$sig_jug_estado['estado'] = 'ataque';
+			$datos[$sig_jug] = json_encode($sig_jug_estado);
+			$datos['ronda']++;
+			$num_cards = $datos['ronda'];
+			while ($num_cards > 3){
+				$num_cards-=3;
+			}
+			if ($num_cards == 3){
+				$datos['turno'] = 3;
+			}
+			$nueva_ronda = false;
+			if ($datos['puntos_equipo_1'] > 21 || $datos['puntos_equipo_2'] > 21){
+				$nueva_ronda = true;
+				$num_cards = 3;
+
+			} else if ($num_cards == 1){
+				$nueva_ronda = true;
+				$datos['turno'] = 0;
+			}
+
+			if ($nueva_ronda) {
+				$baraja = $this->barajar();
+				$datos['baraja'] = json_encode($baraja);
+				$datos['cartas_jugadas'] = json_encode($baraja[0]);
+			} else {
+				$baraja = json_decode($datos['baraja']);
+			}
+			$suma=4;
+			if ($num_cards == 3)  $suma=12;
+			for ($i = 1;$i < 5; $i++){//reparto las cartas
+				unset($jugador);
+				$jugador['estado'] = ($i==1)?'ataque':'esperando_turno';
+				for ($j=0;$j<$num_cards;$j++){
+					switch ($j){
+						case 0:
+							$k = "uno";
+							break;
+						case 1:
+							$k = "dos";
+						break;
+						case 2:
+							$k = "tres";
+						break;
+					}
+					if ($nueva_ronda){
+						$jugador['carta_'.$k] = $baraja[$i+($j*4)];
+					} else {
+						$jugador['carta_'.$k] = $baraja[$i+($j*4)+$suma];
+					}
+				}
+
+				$datos[$sig_jug] = json_encode($jugador);
+
+				var_dump($jugador);
+				$sig_jug = substr($sig_jug,strpos($sig_jug,'_')+1);
+				$sig_jug +=1;
+				if ($sig_jug > 4) $sig_jug-=4;
+				$sig_jug = 'jug_'.$sig_jug;
+			}
+			$this->Juego->insertar_jugada($datos);
+
+		} else {
 			if (is_array(json_decode($datos['cartas_jugadas']))){
 				$datos['cartas_jugadas'] = json_decode($datos['cartas_jugadas']);
 				$datos['cartas_jugadas'][] = $valores['movimiento'];
@@ -163,6 +280,7 @@ class Juegos extends CI_Controller {
 				if ($nueva_ronda) {
 					$baraja = $this->barajar();
 					$datos['baraja'] = json_encode($baraja);
+					$datos['cartas_jugadas'] = json_encode($baraja[0]);
 				} else {
 					$baraja = json_decode($datos['baraja']);
 				}

@@ -1,5 +1,6 @@
 <?php template_set('title', 'Rentoy time') ?>
 
+  <?php if (logueado()): ?>
 <div id="partida">
 <p id="cosas"><p>
 
@@ -11,6 +12,11 @@
   <p id="estado1"><p>
   <p id="estado_partida1"><p>
   <p>Carta1: <button class="acciones" id="1carta1"></button>, Carta2: <button iclass="acciones" id="1carta2"></button>, Carta3: <button class="acciones" id="1carta3"></button><p>
+    <p>Acciones</p>
+    <button class="acciones" id="boton_envio">Envio</button>
+    <button class="defensa" id="boton_quiero">Quiero</button>
+    <button class="defensa" id="boton_mas">Mas</button>
+    <button class="defensa" id="boton_paso">Paso</button>
   <h3>Situación actual jugador 2</h3>
   <button id="unirse2" >Unirse a partida</button>
   <p id="estado2"><p>
@@ -18,16 +24,29 @@
   <p>Carta1: <button class="2acciones" id="2carta1"></button>, Carta2: <button class="2acciones" id="2carta2"></button>, Carta3: <button class="2acciones" id="2carta3"></button><p>
   <p>Acciones</p>
   <button class="2acciones" id="boton_envio">Envio</button>
+  <button class="2defensa" id="boton_quiero">Quiero</button>
+  <button class="2defensa" id="boton_mas">Mas</button>
+  <button class="2defensa" id="boton_paso">Paso</button>
   <h3>Situación actual jugador 3</h3>
   <button id="unirse3" >Unirse a partida</button>
   <p id="estado3"><p>
   <p id="estado_partida3"><p>
   <p>Carta1: <button class="3acciones" id="3carta1"></button>, Carta2: <button class="3acciones" id="3carta2"></button>, Carta3: <button class="3acciones" id="3carta3"></button><p>
+    <p>Acciones</p>
+    <button class="3acciones" id="boton_envio">Envio</button>
+    <button class="3defensa" id="boton_quiero">Quiero</button>
+    <button class="3defensa" id="boton_mas">Mas</button>
+    <button class="3defensa" id="boton_paso">Paso</button>
   <h3>Situación actual jugador 4</h3>
   <button id="unirse4" >Unirse a partida</button>
   <p id="estado4"><p>
   <p id="estado_partida4"><p>
   <p>Carta1: <button class="4acciones" id="4carta1"></button>, Carta2: <button class="4acciones" id="4carta2"></button>, Carta3: <button class="4acciones" id="4carta3"></button><p>
+    <p>Acciones</p>
+    <button class="4acciones" id="boton_envio">Envio</button>
+    <button class="4defensa" id="boton_quiero">Quiero</button>
+    <button class="4defensa" id="boton_mas">Mas</button>
+    <button class="4defensa" id="boton_paso">Paso</button>
 </div>
 
 <script>
@@ -79,11 +98,10 @@ function darOK(r){
 
 
 function getEstado(){
-  if (!en_partida){
-    $.post("<?= base_url() ?>" + 'juegos/get_estado', {
-      id : "1"
-    } ,pintar);
-  } else {
+  $.post("<?= base_url() ?>" + 'juegos/get_estado', {
+    id : "1"
+  } ,pintar);
+  if (en_partida) {
     $.post("<?= base_url() ?>" + 'juegos/get_estado_partida', {
       id_partida : "1",
       id : "1"
@@ -115,11 +133,24 @@ function pintar_partida(r) {
           movimiento: $('#'+this.id).text()
         } );
       });
+    } else if (estado_jug.estado == "defensa") {
+      $('.defensa').click(function () {
+        $.post("<?= base_url() ?>" + 'juegos/nueva_jugada', {
+          id : "1",
+          id_partida: "1",
+          movimiento: $('#'+this.id).text()
+        } );
+      });
     }
   $('#puntos1').text(estado.puntos_equipo_1);
 $('#puntos2').text(estado.puntos_equipo_2);
-var puntos_actuales = parseInt(estado.puntos_pendientes)+ parseInt(estado.puntos_ronda);
-$('#puntosPen').text(puntos_actuales + " puntos");
+if (parseInt(estado.puntos_pendientes) > 0){
+  $('#puntosPen').text(estado.puntos_pendientes + " puntos");
+} else if (parseInt(estado.puntos_ronda) > 1){
+  $('#puntosPen').text(estado.puntos_ronda + " puntos");
+} else {
+  $('#puntosPen').text(estado.puntos_ronda + " punto");
+}
 
   $('#cosas').text(estado.cartas_jugadas);
   $('#estado_partida1').text(estado_jug.estado);
@@ -157,6 +188,14 @@ function pintar_partida2(r) {
 
   if (estado_jug.estado == "ataque"){
     $('.2acciones').click(function () {
+      $.post("<?= base_url() ?>" + 'juegos/nueva_jugada', {
+        id : "2",
+        id_partida: "1",
+        movimiento: $('#'+this.id).text()
+      } );
+    });
+  } else if (estado_jug.estado == "defensa") {
+    $('.2defensa').click(function () {
       $.post("<?= base_url() ?>" + 'juegos/nueva_jugada', {
         id : "2",
         id_partida: "1",
@@ -204,6 +243,14 @@ function pintar_partida3(r) {
           movimiento: $('#'+this.id).text()
         } );
       });
+    } else if (estado_jug.estado == "defensa") {
+      $('.3defensa').click(function () {
+        $.post("<?= base_url() ?>" + 'juegos/nueva_jugada', {
+          id : "3",
+          id_partida: "1",
+          movimiento: $('#'+this.id).text()
+        } );
+      });
     }
 
   $('#estado_partida3').text(estado_jug.estado);
@@ -243,6 +290,14 @@ function pintar_partida4(r) {
           movimiento: $('#'+this.id).text()
         } );
       });
+    } else if (estado_jug.estado == "defensa") {
+      $('.4defensa').click(function () {
+        $.post("<?= base_url() ?>" + 'juegos/nueva_jugada', {
+          id : "4",
+          id_partida: "1",
+          movimiento: $('#'+this.id).text()
+        } );
+      });
     }
 
   $('#cosas').text(estado.jug_1);
@@ -260,11 +315,10 @@ function pintar_partida4(r) {
   }
 }
 function getEstado2(){
-  if (!en_partida){
-    $.post("<?= base_url() ?>" + 'juegos/get_estado', {
-      id : "2"
-    } ,pintar2);
-  } else {
+  $.post("<?= base_url() ?>" + 'juegos/get_estado', {
+    id : "2"
+  } ,pintar2);
+  if (en_partida) {
     $.post("<?= base_url() ?>" + 'juegos/get_estado_partida', {
       id_partida : "1",
       id : "2"
@@ -272,11 +326,10 @@ function getEstado2(){
   }
 }
 function getEstado3(){
-  if (!en_partida){
-    $.post("<?= base_url() ?>" + 'juegos/get_estado', {
-      id : "3"
-    } ,pintar3);
-  } else {
+  $.post("<?= base_url() ?>" + 'juegos/get_estado', {
+    id : "3"
+  } ,pintar3);
+  if (en_partida) {
     $.post("<?= base_url() ?>" + 'juegos/get_estado_partida', {
       id_partida : "1",
       id : "3"
@@ -284,11 +337,10 @@ function getEstado3(){
   }
 }
 function getEstado4(){
-  if (!en_partida){
-    $.post("<?= base_url() ?>" + 'juegos/get_estado', {
-      id : "4"
-    } ,pintar4);
-  } else {
+  $.post("<?= base_url() ?>" + 'juegos/get_estado', {
+    id : "4"
+  } ,pintar4);
+  if (en_partida) {
     $.post("<?= base_url() ?>" + 'juegos/get_estado_partida', {
       id_partida : "1",
       id : "4"
@@ -356,3 +408,10 @@ function pintar4(r){
 }
 
 </script>
+
+              <?php else: ?>
+                    <p>Debes registrarte para poder jugar</p>
+                    <a  href="<?= base_url() ?>usuarios/registro" title="Registro">Registro</a>
+                    <p>o logueate con tu cuenta si ya tienes una</p>
+                    <a  href="<?= base_url() ?>usuarios/cuenta" title="Login">Login</a>
+              <?php endif;?>

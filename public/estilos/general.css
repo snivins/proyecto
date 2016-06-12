@@ -15,6 +15,10 @@ h1, h2, h3{
 h2 {
     margin-left: 15%;
 }
+.formulario {
+  max-width: 70%;
+  margin-left: 15%;
+}
 
   #chat {
     width: 400px;
@@ -176,8 +180,8 @@ div > a {
     border: 3px outset burlywood;
     background-color: darksalmon;
     font-weight: bold;
-    transition: transform 2s;
-}
+    /*transition: transform 2s;*/
+}/*
 div > a:hover {
     transform: scale(1.5 ,1.5)
 }
