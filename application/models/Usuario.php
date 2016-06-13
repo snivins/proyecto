@@ -6,7 +6,10 @@ class Usuario extends CI_Model
 			 parent::__construct();
 	}
 
-
+	public function get_nick($id)
+	{
+    return $this->db->query("select nick from usuarios where id =$id")->row_array();		
+	}
 	public function get_posicion($id)
 	{
     return $this->db->query("select posicion from usuarios where id =$id")->row_array();

@@ -1,92 +1,55 @@
 <?php template_set('title', 'Rentoy time') ?>
-
+<h2>Rentoy time!</h2>
   <?php if (logueado()): ?>
-<div id="partida">
-<p id="cosas"><p>
-
-  <p>Jugando por <span id="puntosPen"></span><p>
-  <p>Equipo 1: <span id="puntos1"></span><p>
-  <p>Equipo 2: <span id="puntos2"></span><p>
-  <h3>Situación actual jugador 1</h3>
-  <button id="unirse1" >Unirse a partida</button>
-  <p id="estado1"><p>
-  <p id="estado_partida1"><p>
-  <p>Carta1: <button class="acciones" id="1carta1"></button>, Carta2: <button iclass="acciones" id="1carta2"></button>, Carta3: <button class="acciones" id="1carta3"></button><p>
-    <p>Acciones</p>
-    <button class="acciones" id="boton_envio">Envio</button>
-    <button class="defensa" id="boton_quiero">Quiero</button>
-    <button class="defensa" id="boton_mas">Mas</button>
-    <button class="defensa" id="boton_paso">Paso</button>
-  <h3>Situación actual jugador 2</h3>
-  <button id="unirse2" >Unirse a partida</button>
-  <p id="estado2"><p>
-  <p id="estado_partida2"><p>
-  <p>Carta1: <button class="2acciones" id="2carta1"></button>, Carta2: <button class="2acciones" id="2carta2"></button>, Carta3: <button class="2acciones" id="2carta3"></button><p>
-  <p>Acciones</p>
-  <button class="2acciones" id="boton_envio">Envio</button>
-  <button class="2defensa" id="boton_quiero">Quiero</button>
-  <button class="2defensa" id="boton_mas">Mas</button>
-  <button class="2defensa" id="boton_paso">Paso</button>
-  <h3>Situación actual jugador 3</h3>
-  <button id="unirse3" >Unirse a partida</button>
-  <p id="estado3"><p>
-  <p id="estado_partida3"><p>
-  <p>Carta1: <button class="3acciones" id="3carta1"></button>, Carta2: <button class="3acciones" id="3carta2"></button>, Carta3: <button class="3acciones" id="3carta3"></button><p>
-    <p>Acciones</p>
-    <button class="3acciones" id="boton_envio">Envio</button>
-    <button class="3defensa" id="boton_quiero">Quiero</button>
-    <button class="3defensa" id="boton_mas">Mas</button>
-    <button class="3defensa" id="boton_paso">Paso</button>
-  <h3>Situación actual jugador 4</h3>
-  <button id="unirse4" >Unirse a partida</button>
-  <p id="estado4"><p>
-  <p id="estado_partida4"><p>
-  <p>Carta1: <button class="4acciones" id="4carta1"></button>, Carta2: <button class="4acciones" id="4carta2"></button>, Carta3: <button class="4acciones" id="4carta3"></button><p>
-    <p>Acciones</p>
-    <button class="4acciones" id="boton_envio">Envio</button>
-    <button class="4defensa" id="boton_quiero">Quiero</button>
-    <button class="4defensa" id="boton_mas">Mas</button>
-    <button class="4defensa" id="boton_paso">Paso</button>
-</div>
-
+    <div id="juego">
+      <div id="menu">
+        <h3>Situación actual jugador =>Menu</h3>
+        <p class="estado"><p>
+        <div id="listado"></div>
+        <button id="nueva_partida">Nueva partida</button>
+      </div>
+      <div id="lobby">
+        <h3>Situación actual jugador =>lobby</h3>
+        <p class="estado"><p>
+        <p id="estado_partida"><p>
+        <button class="boton_salir" >Abandonar partida</button>
+        <p>Jugadores unidos</p>
+        <p>Jugador 1: <span id="nick_1"></span> ,Jugador 2: <span id="nick_2"></span>, Jugador 3: <span id="nick_3"></span>, Jugador 4: <span id="nick_4"></span></p>
+      </div>
+      <div id="partida">
+        <canvas id="pantalla" width="800" height="600"></canvas>
+      </div>
+  </div>
 <script>
+/*Trozo de partida pre canvas
+
+<h3>Situación actual jugador =>partida</h3>
+<p id="cartas_jugadas"><p>
+<p>Jugando por <span id="puntosPen"></span><p>
+<p>Equipo 1: <span id="puntos1"></span><p>
+<p>Equipo 2: <span id="puntos2"></span><p>
+<p class="estado"><p>
+<p id="estado_partida"><p>
+<p>Carta1: <button class="acciones" id="carta1"></button>, Carta2: <button iclass="acciones" id="carta2"></button>, Carta3: <button class="acciones" id="carta3"></button><p>
+  <p>Acciones</p>
+  <button class="acciones" id="boton_envio">Envio</button>
+  <button class="defensa" id="boton_quiero">Quiero</button>
+  <button class="defensa" id="boton_mas">Mas</button>
+  <button class="defensa" id="boton_paso">Paso</button>
+  <button class="boton_salir">Abandonar partida</button>
+
+*/
 var en_partida = false;
 $(document).ready(function() {
+  $('#menu').hide();
+  $('#partida').hide();
+  $('#lobby').hide();
   getEstado();
-    getEstado2();
-      getEstado3();
-        getEstado4();
   setInterval(function(){
     getEstado();
-      getEstado2();
-        getEstado3();
-          getEstado4();
   }, 3000);
 
-  $("#unirse1").click(function() {
-    $.post("<?= base_url() ?>" + 'juegos/unirse_partida', {
-      id : "1",
-      id_partida: "1"
-    },darOK);
-  });
-  $("#unirse2").click(function() {
-    $.post("<?= base_url() ?>" + 'juegos/unirse_partida', {
-      id : "2",
-      id_partida: "1"
-    },darOK);
-  });
-  $("#unirse3").click(function() {
-    $.post("<?= base_url() ?>" + 'juegos/unirse_partida', {
-      id : "3",
-      id_partida: "1"
-    },darOK);
-  });
-  $("#unirse4").click(function() {
-    $.post("<?= base_url() ?>" + 'juegos/unirse_partida', {
-      id : "4",
-      id_partida: "1"
-    },darOK);
-  });
+
 
 });
 function darOK(r){
@@ -98,13 +61,10 @@ function darOK(r){
 
 
 function getEstado(){
-  $.post("<?= base_url() ?>" + 'juegos/get_estado', {
-    id : "1"
-  } ,pintar);
+  $.post("<?= base_url() ?>" + 'juegos/get_estado',pintar);
   if (en_partida) {
     $.post("<?= base_url() ?>" + 'juegos/get_estado_partida', {
-      id_partida : "1",
-      id : "1"
+      id_partida : "1"
     } ,pintar_partida);
   }
 }
@@ -128,7 +88,6 @@ function pintar_partida(r) {
     if (estado_jug.estado == "ataque"){
       $('.acciones').click(function () {
         $.post("<?= base_url() ?>" + 'juegos/nueva_jugada', {
-          id : "1",
           id_partida: "1",
           movimiento: $('#'+this.id).text()
         } );
@@ -136,7 +95,6 @@ function pintar_partida(r) {
     } else if (estado_jug.estado == "defensa") {
       $('.defensa').click(function () {
         $.post("<?= base_url() ?>" + 'juegos/nueva_jugada', {
-          id : "1",
           id_partida: "1",
           movimiento: $('#'+this.id).text()
         } );
@@ -152,259 +110,116 @@ if (parseInt(estado.puntos_pendientes) > 0){
   $('#puntosPen').text(estado.puntos_ronda + " punto");
 }
 
-  $('#cosas').text(estado.cartas_jugadas);
+  $('#cartas_jugadas').text(estado.cartas_jugadas);
   $('#estado_partida1').text(estado_jug.estado);
-  $('#1carta1').text(estado_jug.carta_uno);
-  if(estado_jug.hasOwnProperty("carta_dos")){
-    $('#1carta2').show();
-      $('#1carta2').text(estado_jug.carta_dos);
-  } else {
-    $('#1carta2').hide();
-  }
-  if(estado_jug.hasOwnProperty("carta_tres")){
-    $('#1carta3').show();
-    $('#1carta3').text(estado_jug.carta_tres);
-  } else {
-    $('#1carta3').hide();
-  }
-}
+  $('#carta1').text(estado_jug.carta_uno);
 
-function pintar_partida2(r) {
-  var estado = $.parseJSON(r);
-  if (estado.hasOwnProperty("jug_1")){
-    var jugadorino = "jug_1";
-    var estado_jug = $.parseJSON(estado.jug_1);
-  }else if (estado.hasOwnProperty("jug_2")){
-    var jugadorino = "jug_2";
-    var estado_jug = $.parseJSON(estado.jug_2);
-  }else if(estado.hasOwnProperty("jug_3")){
-    var jugadorino = "jug_3";
-    var estado_jug = $.parseJSON(estado.jug_3);
-  }else if(estado.hasOwnProperty("jug_4")){
-    var jugadorino = "jug_4";
-    var estado_jug = $.parseJSON(estado.jug_4);
-  }
-
-
-  if (estado_jug.estado == "ataque"){
-    $('.2acciones').click(function () {
-      $.post("<?= base_url() ?>" + 'juegos/nueva_jugada', {
-        id : "2",
-        id_partida: "1",
-        movimiento: $('#'+this.id).text()
-      } );
-    });
-  } else if (estado_jug.estado == "defensa") {
-    $('.2defensa').click(function () {
-      $.post("<?= base_url() ?>" + 'juegos/nueva_jugada', {
-        id : "2",
-        id_partida: "1",
-        movimiento: $('#'+this.id).text()
-      } );
-    });
-  }
-  $('#estado_partida2').text(estado_jug.estado);
-  $('#2carta1').text(estado_jug.carta_uno);
-
-  if(estado_jug.hasOwnProperty("carta_dos")){
-    $('#2carta2').show();
-    $('#2carta2').text(estado_jug.carta_dos);
-  } else {
-    $('#2carta2').hide();
-  }
-  if(estado_jug.hasOwnProperty("carta_tres")){
-    $('#2carta3').show();
-    $('#2carta3').text(estado_jug.carta_tres);
-  } else {
-    $('#2carta3').hide();
-  }
-}
-function pintar_partida3(r) {
-  var estado = $.parseJSON(r);
-  if (estado.hasOwnProperty("jug_1")){
-    var jugadorino = "jug_1";
-    var estado_jug = $.parseJSON(estado.jug_1);
-  }else if (estado.hasOwnProperty("jug_2")){
-    var jugadorino = "jug_2";
-    var estado_jug = $.parseJSON(estado.jug_2);
-  }else if(estado.hasOwnProperty("jug_3")){
-    var jugadorino = "jug_3";
-    var estado_jug = $.parseJSON(estado.jug_3);
-  }else if(estado.hasOwnProperty("jug_4")){
-    var jugadorino = "jug_4";
-    var estado_jug = $.parseJSON(estado.jug_4);
-  }
-
-    if (estado_jug.estado == "ataque"){
-      $('.3acciones').click(function () {
-        $.post("<?= base_url() ?>" + 'juegos/nueva_jugada', {
-          id : "3",
-          id_partida: "1",
-          movimiento: $('#'+this.id).text()
-        } );
-      });
-    } else if (estado_jug.estado == "defensa") {
-      $('.3defensa').click(function () {
-        $.post("<?= base_url() ?>" + 'juegos/nueva_jugada', {
-          id : "3",
-          id_partida: "1",
-          movimiento: $('#'+this.id).text()
-        } );
-      });
+  $('canvas').drawImage({
+    draggable: true,
+    name: 'carta1',
+    source: 'images/baraja/'+estado_jug.carta_uno+'.png',
+    x: 150, y: 150,
+    height: 120,
+    bringToFront: true,
+    width: 80,
+    mouseover: function(layer) {
+      $(this).animateLayer(layer, {
+          shadowColor: '#000',
+          shadowBlur: 10,
+      }, 0);
+    },
+    mouseout: function(layer) {
+      $(this).animateLayer(layer, {
+          shadowColor: '#F00',
+          shadowBlur: 0,
+      }, 0);
     }
-
-  $('#estado_partida3').text(estado_jug.estado);
-  $('#3carta1').text(estado_jug.carta_uno);
+  });
   if(estado_jug.hasOwnProperty("carta_dos")){
-    $('#3carta2').text(estado_jug.carta_dos);
+    $('#carta2').show();
+      $('#carta2').text(estado_jug.carta_dos);
   } else {
-    $('#3carta2').text("no tiene");
+    $('#carta2').hide();
   }
   if(estado_jug.hasOwnProperty("carta_tres")){
-    $('#3carta3').text(estado_jug.carta_tres);
+    $('#carta3').show();
+    $('#carta3').text(estado_jug.carta_tres);
   } else {
-    $('#3carta3').text("no tiene");
+    $('#carta3').hide();
   }
 }
-function pintar_partida4(r) {
-  var estado = $.parseJSON(r);
-  if (estado.hasOwnProperty("jug_1")){
-    var jugadorino = "jug_1";
-    var estado_jug = $.parseJSON(estado.jug_1);
-  }else if (estado.hasOwnProperty("jug_2")){
-    var jugadorino = "jug_2";
-    var estado_jug = $.parseJSON(estado.jug_2);
-  }else if(estado.hasOwnProperty("jug_3")){
-    var jugadorino = "jug_3";
-    var estado_jug = $.parseJSON(estado.jug_3);
-  }else if(estado.hasOwnProperty("jug_4")){
-    var jugadorino = "jug_4";
-    var estado_jug = $.parseJSON(estado.jug_4);
-  }
 
-    if (estado_jug.estado == "ataque"){
-      $('.4acciones').click(function () {
-        $.post("<?= base_url() ?>" + 'juegos/nueva_jugada', {
-          id : "4",
-          id_partida: "1",
-          movimiento: $('#'+this.id).text()
-        } );
-      });
-    } else if (estado_jug.estado == "defensa") {
-      $('.4defensa').click(function () {
-        $.post("<?= base_url() ?>" + 'juegos/nueva_jugada', {
-          id : "4",
-          id_partida: "1",
-          movimiento: $('#'+this.id).text()
-        } );
-      });
-    }
-
-  $('#cosas').text(estado.jug_1);
-  $('#estado_partida4').text(estado_jug.estado);
-  $('#4carta1').text(estado_jug.carta_uno);
-  if(estado_jug.hasOwnProperty("carta_dos")){
-    $('#4carta2').text(estado_jug.carta_dos);
-  } else {
-    $('#4carta2').text("no tiene");
-  }
-  if(estado_jug.hasOwnProperty("carta_tres")){
-    $('#4carta3').text(estado_jug.carta_tres);
-  } else {
-    $('#4carta3').text("no tiene");
-  }
-}
-function getEstado2(){
-  $.post("<?= base_url() ?>" + 'juegos/get_estado', {
-    id : "2"
-  } ,pintar2);
-  if (en_partida) {
-    $.post("<?= base_url() ?>" + 'juegos/get_estado_partida', {
-      id_partida : "1",
-      id : "2"
-    } ,pintar_partida2);
-  }
-}
-function getEstado3(){
-  $.post("<?= base_url() ?>" + 'juegos/get_estado', {
-    id : "3"
-  } ,pintar3);
-  if (en_partida) {
-    $.post("<?= base_url() ?>" + 'juegos/get_estado_partida', {
-      id_partida : "1",
-      id : "3"
-    } ,pintar_partida3);
-  }
-}
-function getEstado4(){
-  $.post("<?= base_url() ?>" + 'juegos/get_estado', {
-    id : "4"
-  } ,pintar4);
-  if (en_partida) {
-    $.post("<?= base_url() ?>" + 'juegos/get_estado_partida', {
-      id_partida : "1",
-      id : "4"
-    } ,pintar_partida4);
-  }
-}
 function pintar(r){
-    $('#estado1').empty();
+    $('#estado').empty();
     var estado = $.parseJSON(r);
     if (estado != null) {
       if (estado['estado'] == "creada") {
-        $('#estado1').text('Esperando jugadores  ');
+        $('.estado').text('Esperando jugadores  ');
+        $('#lobby').show();
+        $('#menu').hide();
+        $('#partida').hide();
+        if (estado.hasOwnProperty('jug_1_nick')){
+          $('#nick_1').text(estado.jug_1_nick);
+        }
+        if (estado.hasOwnProperty('jug_2_nick')){
+          $('#nick_2').text(estado.jug_2_nick);
+        }
+        if (estado.hasOwnProperty('jug_3_nick')){
+          $('#nick_3').text(estado.jug_3_nick);
+        }
+        if (estado.hasOwnProperty('jug_4_nick')){
+          $('#nick_4').text(estado.jug_4_nick);
+        }
+        $(".boton_salir").click(function() {
+          $.post("<?= base_url() ?>" + 'juegos/abandonar_sala');
+        });
         en_partida = false;
       } else if (estado['estado'] == "jugando"){
-        $('#estado1').text('En partida  ');
+        $('.estado').text('En partida  ');
+        $(".boton_salir").click(function() {
+          $.post("<?= base_url() ?>" + 'juegos/abandonar_partida');
+        });
         en_partida = true;
-        $( "#unirse1" ).hide();
-        $( "#unirse2" ).hide();
-        $( "#unirse3" ).hide();
-        $( "#unirse4" ).hide();
+        $('#lobby').hide();
+        $('#menu').hide();
+        $('#partida').show();
       }
     } else {
       en_partida = false;
-      $('#estado1').text('En menu');
+      $('.estado').text('En menu');
+      $.post("<?= base_url() ?>" + 'juegos/listar_partidas',pintar_listado);
+
+      $("#nueva_partida").click(function() {
+        $.post("<?= base_url() ?>" + 'juegos/nueva_partida');
+      });
+      $('#lobby').hide();
+      $('#menu').show();
+      $('#partida').hide();
     }
 }
-function pintar2(r){
-    $('#estado2').empty();
+function pintar_listado(r){
+    $('#listado').empty();
     var estado = $.parseJSON(r);
-    if (estado != null) {
-      if (estado['estado'] == "creada") {
-        $('#estado2').text('Esperando jugadores  ');
-      } else if (estado['estado'] == "jugando"){
-        $('#estado2').text('En partida  ');
-      }
-    } else {
-      $('#estado2').text('En menu');
+
+    for (mimi in estado){
+        var jugadores = 1;
+        if (estado[mimi].jug_2 != null) {
+          jugadores++;
+        }
+        if (estado[mimi].jug_3 != null) {
+          jugadores++;
+        }
+        if (estado[mimi].jug_4 != null) {
+          jugadores++;
+        }
+        $('#listado').append('<p> Partida: '+ estado[mimi].id_partida +' | Jugadores: '+ jugadores +' de 4</p>');
+        $('#listado').append('<button class="unirse" id="'+estado[mimi].id_partida+'">Unirse</button>');
     }
-}
-function pintar3(r){
-    $('#estado3').empty();
-    var estado = $.parseJSON(r);
-    if (estado != null) {
-      if (estado['estado'] == "creada") {
-        $('#estado3').text('Esperando jugadores  ');
-      } else if (estado['estado'] == "jugando"){
-        $('#estado3').text('En partida  ');
-      }
-    } else {
-      $('#estado3').text('En menu');
-    }
-}
-function pintar4(r){
-    $('#estado4').empty();
-    var estado = $.parseJSON(r);
-    if (estado != null) {
-      if (estado['estado'] == "creada") {
-        $('#estado4').text('Esperando jugadores  ');
-      } else if (estado['estado'] == "jugando"){
-        $('#estado4').text('En partida  ');
-      }
-    } else {
-      $('#estado4').text('En menu');
-    }
+    $(".unirse").click(function() {
+      $.post("<?= base_url() ?>" + 'juegos/unirse_partida', {
+        id_partida: this.id
+      },darOK);
+    });
 }
 
 </script>

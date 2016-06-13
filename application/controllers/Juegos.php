@@ -6,7 +6,7 @@ class Juegos extends CI_Controller {
 
 	public function index()
 	{
-
+/*
 		$numero = 0;
 		$carta['carta_uno'] = $numero;
 		$carta['carta_dos'] = $numero;
@@ -34,6 +34,26 @@ class Juegos extends CI_Controller {
 		var_dump($estado);*/
 		$this->template->load('juego');
 	}
+	public function abandonar_partida()
+	{
+		$id_partida = $this->Juego->get_id_partida($this->session->userdata('usuario')['id'])['id_partida'];
+		$this->Juego->fin_partida($id_partida);
+	}
+	public function abandonar_sala() //como no ha empezado no elimina la partida
+	{
+		$pos = $this->Usuario->get_posicion($this->session->userdata('usuario')['id'])['posicion'];
+		if ($pos === 'jug_1'){
+			$this->abandonar_partida();
+		} else if ($pos !== 'null'){
+			$this->Juego->borrar_jugador($this->Juego->get_id_partida($this->session->userdata('usuario')['id'])['id_partida'], $pos);
+			$this->Usuario->set_posicion($this->session->userdata('usuario')['id'], null);
+		}
+	}
+	public function listar_partidas()
+	{
+		$partidas = $this->Juego->get_partidas_creadas();
+		echo (json_encode($partidas));
+	}
 	public function barajar()
 	{
 		$baraja_oros = array('01_oros', '02_oros', '03_oros', '04_oros', '05_oros', '06_oros', '07_oros', '10_oros', '11_oros', '12_oros');
@@ -47,14 +67,27 @@ class Juegos extends CI_Controller {
 
 	public function get_estado()
 	{
-		$id = $_REQUEST['id'];//$this->session->userdata('usuario')['id']
-		$estado = json_encode($this->Juego->get_estado($id));
+		$id = $this->session->userdata('usuario')['id'];
+		$datos = $this->Juego->get_estado($id);
+		if ($datos['jug_1'] !== NULL) {
+			$datos['jug_1_nick'] = $this->Usuario->get_nick($datos['jug_1'])['nick'];
+		}
+		if ($datos['jug_2'] !== NULL) {
+			$datos['jug_2_nick'] = $this->Usuario->get_nick($datos['jug_2'])['nick'];
+		}
+		if ($datos['jug_3'] !== NULL) {
+			$datos['jug_3_nick'] = $this->Usuario->get_nick($datos['jug_3'])['nick'];
+		}
+		if ($datos['jug_4'] !== NULL) {
+			$datos['jug_4_nick'] = $this->Usuario->get_nick($datos['jug_4'])['nick'];
+		}
+		$estado = json_encode($datos);
 		echo($estado);
 	}
 	public function get_estado_partida()
 	{
-		$valores['id_partida']= $_REQUEST['id_partida'];
-		$valores['posicion']=$this->Usuario->get_posicion($_REQUEST['id'])['posicion'];
+		$valores['id_partida']= $this->Juego->get_id_partida($this->session->userdata('usuario')['id'])['id_partida'];
+		$valores['posicion']=$this->Usuario->get_posicion($this->session->userdata('usuario')['id'])['posicion'];
 		$situacion = $this->Juego->get_estado_jugador($valores);
 
 		if (!isset($_REQUEST['jugada'])) {
@@ -66,8 +99,8 @@ class Juegos extends CI_Controller {
 
 	public function nueva_jugada()
 	{
-		$valores['id'] = $_REQUEST['id'];//$this->session->userdata('usuario')['id']
-		$valores['id_partida'] = $_REQUEST['id_partida'];
+		$valores['id'] = $this->session->userdata('usuario')['id'];
+		$valores['id_partida'] = $this->Juego->get_id_partida($valores['id'])['id_partida'];
 		$valores['movimiento'] = $_REQUEST['movimiento'];
 		$posicion = $this->Usuario->get_posicion($valores['id'])['posicion'];
 		$datos = $this->Juego->get_estado_partida($valores['id_partida']);
@@ -504,9 +537,15 @@ class Juegos extends CI_Controller {
 	}
 
 	}
+	public function nueva_partida(){
+		$id = $this->session->userdata('usuario')['id'];
+		if ($this->Juego->get_id_partida($id)['id_partida'] === null) {
+			$this->Juego->nueva_partida($id);
+		}
+	}
 	public function unirse_partida()
 	{
-		$valores['id'] = $_REQUEST['id'];
+		$valores['id'] = $this->session->userdata('usuario')['id'];
 		$valores['id_partida'] = $_REQUEST['id_partida'];
 		$valido = $this->Juego->unirse($valores);
 		if ($valido){

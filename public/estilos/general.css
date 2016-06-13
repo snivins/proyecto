@@ -19,7 +19,17 @@ h2 {
   max-width: 70%;
   margin-left: 15%;
 }
-
+#pantalla {
+  border: 1px solid;
+  margin: 10px;
+}
+  #partida{
+    width: 100%;
+       display: -webkit-flex;
+       display: flex;
+       align-items: center;
+       justify-content: center;
+  }
   #chat {
     width: 400px;
     padding: 10px;
@@ -32,7 +42,7 @@ h2 {
     max-height: 380px;
   }
   #juego {
-    width: 1120px;
+    min-height: 400px;
     display: flex;
     background-image: url('../images/fondo.png');
     background-size: contain;
@@ -130,8 +140,16 @@ header {
     box-shadow: 0px 50px 15px 10px bisque;
 }
 header > article {
-    display: flex;
     justify-content: space-around;
+   display: -webkit-flex;
+   display: flex;
+}
+#info_usuario{
+
+   display: -webkit-flex;
+   display: flex;
+    -webkit-flex-direction: column;
+    flex-direction: column;
 }
 nav {
     display: flex;
@@ -158,11 +176,11 @@ section {
 footer {
     height: 50px;
     background: -webkit-linear-gradient(burlywood, bisque);
-}
+}/*
 header > article > form > input:first-child, header > article >form >input:nth-child(3) {
     width: 80px;
     height: 20px;
-}
+}/*
 form > input {
     margin: 2px;
 }/*
@@ -171,7 +189,7 @@ section > article > p {
 }
 section > article {
     margin: 5px;
-}*/
+}*//*
 div > a {
     text-decoration: none;
     text-align: center;
@@ -180,8 +198,8 @@ div > a {
     border: 3px outset burlywood;
     background-color: darksalmon;
     font-weight: bold;
-    /*transition: transform 2s;*/
-}/*
+    /*transition: transform 2s;
+}
 div > a:hover {
     transform: scale(1.5 ,1.5)
 }

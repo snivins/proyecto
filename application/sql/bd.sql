@@ -7,37 +7,36 @@ create table mensajes (
   contenido varchar(100) not null
 );
 
-drop table if exists usuarios cascade;
-create table usuarios (
-  id bigserial constraint pk_usuarios primary key,
-  nick                varchar(100) not null constraint uq_usuarios_nick unique,
-  password            char(60)     not null constraint ck_password_valida
-                                            check (length(password) = 60),
-  email               varchar(100) not null,
-  posicion varchar(30)
-);
-insert into usuarios(nick,password,email,posicion) values
-  ('sniv','$2y$10$QTIcrVfqdsEOL8DU1Aac5OgsIasIfNmgzQAZGDaNIrGAWWWka17ze','vicentejlopezballen@gmail.com','jug_1');
+  drop table if exists usuarios cascade;
+  create table usuarios (
+    id bigserial constraint pk_usuarios primary key,
+    nick                varchar(100) not null constraint uq_usuarios_nick unique,
+    password            char(60)     not null constraint ck_password_valida
+                                              check (length(password) = 60),
+    email               varchar(100) not null,
+    posicion varchar(30)
+  );
+  insert into usuarios(nick,password,email,posicion) values
+    ('sniv','$2y$10$QTIcrVfqdsEOL8DU1Aac5OgsIasIfNmgzQAZGDaNIrGAWWWka17ze','vicentejlopezballen@gmail.com','jug_1');
 
 
 drop table if exists partidas cascade;
 create table partidas (
   id_partida  bigserial constraint pk_partidas primary key,
-  estado varchar(30), /* creada, jugando, terminada, cancelada*/
+  estado varchar(30),  /* creada, jugando, terminada, cancelada*/
   creada_el timestamp default current_timestamp,
-  "jug_1"  bigint constraint fk_partidas_1_usuarios references usuarios(id) uq_partidas_jug_1 unique,
-  "jug_2"  bigint constraint fk_partidas_2_usuarios references usuarios(id) uq_partidas_jug_2 unique,
-  "jug_3"  bigint constraint fk_partidas_3_usuarios references usuarios(id) uq_partidas_jug_3 unique,
-  "jug_4"  bigint constraint fk_partidas_4_usuarios references usuarios(id) uq_partidas_jug_4 unique
+  "jug_1"  bigint constraint fk_partidas_1_usuarios references usuarios(id),
+  "jug_2"  bigint constraint fk_partidas_2_usuarios references usuarios(id),
+  "jug_3"  bigint constraint fk_partidas_3_usuarios references usuarios(id),
+  "jug_4"  bigint constraint fk_partidas_4_usuarios references usuarios(id)
 );
 /*
 creo partida, soy jug_1, estado 'creada' (pueden unirse a la partida)
 
-
 */
 
 
-insert into partidas(estado,jug_1) values ('creada', 1);
+/*insert into partidas(estado,jug_1) values ('creada', 1);*/
 drop table if exists ci_sessions cascade;
 
 create table "ci_sessions" (

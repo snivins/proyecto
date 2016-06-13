@@ -26,6 +26,7 @@
             <a href="#cuerpo"><img src="/images/logo.png" title="Inicio" alt="inicio" /></a>
             <h1>Rentoy time!!</h1>
             <article>
+              <div id="info_usuario">
               <?php if (!logueado()): ?>
                 <?= form_open('usuarios/login') ?>
                   <div class="form-group">
@@ -39,13 +40,15 @@
                                       'id="password" ') ?>
                   </div>
                   <?= form_submit('login', 'Login') ?>
-                  <?= anchor('/usuarios/registrar', 'Registrate', ' role="button"') ?>
+                  <?= anchor('/usuarios/registro', 'Registrate', ' role="button"') ?>
                 <?= form_close() ?>
 
               <?php else: ?>
                     <p>Bienvenido <?= nick(usuario_id())?></p>
                     <a  href="<?= base_url() ?>usuarios/logout" title="Logout">Salir</a>
               <?php endif;?>
+
+            </div>
                 <img src="/images/fotoPerfil.png" title="Foto de perfil" alt="Profile picture"/>
 
             </article>

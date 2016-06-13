@@ -10,7 +10,12 @@ class Juego extends CI_Model
 	{
     return $this->db->query("select * from partidas where estado = 'creada'")->result_array();
 	}
-
+	public function nueva_partida($id){
+		$valores['jug_1'] = $id;
+		$valores['estado'] = 'creada';
+		$this->Usuario->set_posicion($id,'jug_1');
+		return $this->db->insert('partidas', $valores);
+	}
 	public function insertar_jugada($valores)
 	{
 		return $this->db->insert('jugadas', $valores);
@@ -19,9 +24,14 @@ class Juego extends CI_Model
 		return $this->db->query("select $pos_jug from partidas where
 														id_partida = $id_partida")->row_array();
 	}
+	public function get_id_partida($id){
+		return $this->db->query("select id_partida from partidas where
+														estado != 'terminada' AND (jug_1 = $id OR
+														jug_2 = $id OR jug_3 = $id OR jug_4 = $id )")->row_array();
+	}
 	public function get_estado($id)
 	{
-		return $this->db->query("select estado from partidas where
+		return $this->db->query("select * from partidas where
 														estado != 'terminada' AND (jug_1 = $id OR
 														jug_2 = $id OR jug_3 = $id OR jug_4 = $id )")->row_array();
 	}
@@ -44,12 +54,19 @@ class Juego extends CI_Model
 
 		$this->db->where('id', $valores['id'])->update('jugadas', $valores);
 	}
+	public function fin_partida($id_partida){
+			$this->db->where('id_partida', $id_partida)->update('partidas', array('estado' => 'terminada'));
+			for ($i = 1; $i<5;$i++){
+				$jug = $this->get_jug_id('jug_'.$i, $id_partida);
+				if ($jug !== NULL) {
+					$this->set_estado(array('id_partida' => $id_partida, 'estado' => null));
+				}
+			}
+	}
 
 	public function set_estado($valores)
 	{
-		$id_partida = $valores['id_partida'];
-		$estado['estado'] = $valores['estado'];//unshift maybe?
-		$this->db->where('id_partida', $id_partida)->update('partidas', $estado);
+		$this->db->where('id_partida', $valores['id_partida'])->update('partidas', array('estado' => $valores['estado']));
 	}
 
 	public function partida_completa($id_partida)
@@ -64,7 +81,10 @@ class Juego extends CI_Model
 		return $this->db->query("select * from partidas
 															where id_partida=$id_partida")->row_array();
 	}
-
+	public function borrar_jugador($id_partida, $posicion)
+	{
+		if ($posicion !== null)	$this->db->where('id_partida', $id_partida)->update('partidas', array($posicion => null));
+	}
 	public function unirse($valores)
 	{
 		$id_partida = $valores['id_partida'];
