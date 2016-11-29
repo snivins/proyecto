@@ -7,9 +7,9 @@ class Chat extends CI_Model
 	}
 
 
-	public function get_mensajes()
+	public function get_mensajes($equipo,  $id_partida)
 	{
-    return $this->db->query('select * from mensajes order by id desc limit 20')->result_array();
+    return $this->db->query("select * from mensajes where id_partida=$id_partida AND privado!='$equipo' order by id desc limit 20")->result_array();
 	}
 
 	public function insertar_mensaje($valores)

@@ -38,8 +38,32 @@ class Usuarios extends CI_Controller {
   }
 
   public function cuenta(){
-		$this->template->load('cuenta');
+    if ($this->Usuario->logueado() && $this->session->userdata('usuario')['id']  === "1") {
+      $datos['filas'] = $this->Usuario->get_usuarios();
+        $datos['info_usuario_nick'] = $this->Usuario->get_nick($this->session->userdata('usuario')['id']);
+        $datos['info_usuario_foto'] = $this->Usuario->get_foto($this->session->userdata('usuario')['id']);
+      $this->template->load('cuenta', $datos);
+    } else if ($this->Usuario->logueado()){
+      $datos['info_usuario_nick'] = $this->Usuario->get_nick($this->session->userdata('usuario')['id']);
+      $datos['info_usuario_foto'] = $this->Usuario->get_foto($this->session->userdata('usuario')['id']);
+    	$this->template->load('cuenta', $datos);
+    } else {
+      $this->template->load('cuenta');
+    }
   }
+  public function recordatorio(){
+
+      $this->load->view('recordatorio');
+  }
+  public function borrar($id)
+    {
+
+        if ($id !== NULL)
+        {
+            $this->Usuario->borrar($id);
+        }
+        redirect('usuarios/cuenta');
+    }
   public function login() {
         if ($this->Usuario->logueado()) {
             redirect('juegos');

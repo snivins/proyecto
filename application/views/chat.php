@@ -17,6 +17,7 @@
           <input type="button" id="enviar_privado" value="Enviar mensaje privado"><br/>
           <input type="button" id="rondo" value="Cuenta atras">
         </form>
+        
       </div>
   </div>
   <div id="minijogo">

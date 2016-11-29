@@ -5,10 +5,17 @@ class Usuario extends CI_Model
 	{
 			 parent::__construct();
 	}
-
+	public function get_usuarios()
+	{
+		return $this->db->query("select id, nick from usuarios")->result_array();
+	}
+	public function get_usuarios_pdf()
+	{
+		return $this->db->query("select id, nick, email, date(registrado)from usuarios")->result_array();
+	}
 	public function get_nick($id)
 	{
-    return $this->db->query("select nick from usuarios where id =$id")->row_array();		
+    return $this->db->query("select nick from usuarios where id =$id")->row_array();
 	}
 	public function get_posicion($id)
 	{
@@ -28,6 +35,10 @@ class Usuario extends CI_Model
       $res = $this->db->get_where('usuarios', array('nick' => $nick));
       return $res->num_rows() > 0 ? $res->row_array() : FALSE;
   }
+	public function get_foto($id)
+	{
+    return $this->db->query("select foto_perfil from usuarios where id='$id'")->row_array();
+	}
   public function set_posicion($id,$posicion)
   {
     $pos['posicion']= $posicion;
@@ -46,5 +57,9 @@ class Usuario extends CI_Model
 	public function insertar($valores)
 	{
 		return $this->db->insert('usuarios', $valores);
+	}
+	public function borrar($id)
+	{
+			return $this->db->delete('usuarios', array('id' => $id));
 	}
 }

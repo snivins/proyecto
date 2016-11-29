@@ -2,7 +2,8 @@
 <h2>Registro de usuario</h2>
         <div class="formulario">
         <?= mensajes() ?>
-        <?php if ( ! empty(error_array())): ?>
+        <?php $variable= error_array();
+        if ( ! empty($variable)): ?>
             <div class="alert alert-danger" role="alert">
               <?= validation_errors() ?>
             </div>
@@ -37,3 +38,4 @@
            <?= anchor('/juegos', 'Volver', 'class="btn btn-info" role="button"') ?>
          <?= form_close() ?>
        </div>
+       <script>

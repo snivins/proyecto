@@ -2,8 +2,10 @@ drop table if exists mensajes cascade;
 
 create table mensajes (
   id  bigserial constraint pk_mensajes primary key,
+  id_partida bigint constraint fk_mensajes_partidas references partidas(id_partida),
   usuario varchar(30) not null,
   fecha timestamp default current_timestamp,
+  privado varchar(10) default '',
   contenido varchar(100) not null
 );
 
@@ -14,10 +16,15 @@ create table mensajes (
     password            char(60)     not null constraint ck_password_valida
                                               check (length(password) = 60),
     email               varchar(100) not null,
-    posicion varchar(30)
+    posicion varchar(30),
+    foto_perfil varchar(50) default 'fotoPerfil.png',
+    registrado timestamp default current_timestamp
   );
   insert into usuarios(nick,password,email,posicion) values
-    ('sniv','$2y$10$QTIcrVfqdsEOL8DU1Aac5OgsIasIfNmgzQAZGDaNIrGAWWWka17ze','vicentejlopezballen@gmail.com','jug_1');
+    ('sniv','$2y$10$QTIcrVfqdsEOL8DU1Aac5OgsIasIfNmgzQAZGDaNIrGAWWWka17ze','vicentejlopezballen@gmail.com','jug_1'),
+      ('sniv2','$2y$10$QTIcrVfqdsEOL8DU1Aac5OgsIasIfNmgzQAZGDaNIrGAWWWka17ze','2vicentejlopezballen@gmail.com',null),
+        ('sniv3','$2y$10$QTIcrVfqdsEOL8DU1Aac5OgsIasIfNmgzQAZGDaNIrGAWWWka17ze','12vicentejlopezballen@gmail.com',null),
+          ('sniv4','$2y$10$QTIcrVfqdsEOL8DU1Aac5OgsIasIfNmgzQAZGDaNIrGAWWWka17ze','1vicentejlopezballen@gmail.com',null);
 
 
 drop table if exists partidas cascade;
@@ -79,6 +86,8 @@ create table jugadas (
   puntos_ronda numeric(30) not null default 1,/*en caso de que envie y acepte, se guarda aqui el total*/
   puntos_equipo_1 numeric(80),
   puntos_equipo_2 numeric(80),
+  turno_jug varchar(5),
+  ultima_jugada varchar(50),
   jug_1 json not null,
   jug_2 json not null,
   jug_3 json not null,

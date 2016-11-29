@@ -3,7 +3,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 class Juegos extends CI_Controller {
 
+	public function juego()
+	{
+		$this->template->load('index');
 
+	}
 	public function index()
 	{
 /*
@@ -34,10 +38,22 @@ class Juegos extends CI_Controller {
 		var_dump($estado);*/
 		$this->template->load('juego');
 	}
+	public function multimedia() {
+		$this->template->load('multimedia');
+	}
 	public function abandonar_partida()
 	{
 		$id_partida = $this->Juego->get_id_partida($this->session->userdata('usuario')['id'])['id_partida'];
-		$this->Juego->fin_partida($id_partida);
+		$this->Juego->fin_partida($id_partida, 'cancelada');
+	}
+	public function tutorial(){
+		$this->template->load('tutorial');
+	}
+	public function ver_jugadas(){
+		$id_partida = $this->Juego->get_id_partida($this->session->userdata('usuario')['id'])['id_partida'];
+		$msj = $this->Juego->get_mensajes($id_partida);//donde equipo enemigo privado = false
+		$msn = json_encode(array_reverse($msj));
+		echo ($msn);
 	}
 	public function abandonar_sala() //como no ha empezado no elimina la partida
 	{
@@ -71,15 +87,19 @@ class Juegos extends CI_Controller {
 		$datos = $this->Juego->get_estado($id);
 		if ($datos['jug_1'] !== NULL) {
 			$datos['jug_1_nick'] = $this->Usuario->get_nick($datos['jug_1'])['nick'];
+			$datos['jug_1_foto'] = $this->Usuario->get_foto($datos['jug_1'])['foto_perfil'];
 		}
 		if ($datos['jug_2'] !== NULL) {
 			$datos['jug_2_nick'] = $this->Usuario->get_nick($datos['jug_2'])['nick'];
+			$datos['jug_2_foto'] = $this->Usuario->get_foto($datos['jug_2'])['foto_perfil'];
 		}
 		if ($datos['jug_3'] !== NULL) {
 			$datos['jug_3_nick'] = $this->Usuario->get_nick($datos['jug_3'])['nick'];
+			$datos['jug_3_foto'] = $this->Usuario->get_foto($datos['jug_3'])['foto_perfil'];
 		}
 		if ($datos['jug_4'] !== NULL) {
 			$datos['jug_4_nick'] = $this->Usuario->get_nick($datos['jug_4'])['nick'];
+			$datos['jug_4_foto'] = $this->Usuario->get_foto($datos['jug_4'])['foto_perfil'];
 		}
 		$estado = json_encode($datos);
 		echo($estado);
@@ -90,6 +110,7 @@ class Juegos extends CI_Controller {
 		$valores['posicion']=$this->Usuario->get_posicion($this->session->userdata('usuario')['id'])['posicion'];
 		$situacion = $this->Juego->get_estado_jugador($valores);
 
+		$situacion['activo'] = $this->Juego->get_jug_activo($valores['id_partida']);
 		if (!isset($_REQUEST['jugada'])) {
 			//echo(json_encode(array('juega'=>'no')));
 			echo(json_encode($situacion));
@@ -104,6 +125,9 @@ class Juegos extends CI_Controller {
 		$valores['movimiento'] = $_REQUEST['movimiento'];
 		$posicion = $this->Usuario->get_posicion($valores['id'])['posicion'];
 		$datos = $this->Juego->get_estado_partida($valores['id_partida']);
+		if ($datos['puntos_equipo_1'] >= 30 || $datos['puntos_equipo_2'] >= 30){
+			$this->Juego->fin_partida($id_partida, 'terminada');
+		}
 		$valores_jugador = json_decode($datos[$posicion],true);
 		if ($valores_jugador['estado'] !== 'defensa' && $valores_jugador['estado'] !== 'ataque'){
 			echo('oh oh');
@@ -120,6 +144,11 @@ class Juegos extends CI_Controller {
 			$jugador_defensa = json_decode($datos[$sig_jug],true);
 			$jugador_defensa['estado'] = 'defensa';
 			$datos[$sig_jug] = json_encode($jugador_defensa);
+			$datos['turno_jug'] = $sig_jug;
+
+			$nombre_jugada = $this->Juego->get_jug_id($posicion, $valores['id_partida']);
+			$nombre_jugada = $this->Usuario->get_nick($nombre_jugada[$posicion]);
+			$datos['ultima_jugada']= $nombre_jugada['nick'] . ' envia. (Pide jugar por 3 puntos)';
 			$this->Juego->insertar_jugada($datos);
 
 		}	else if ($valores['movimiento'] === 'Quiero') {
@@ -141,6 +170,11 @@ class Juegos extends CI_Controller {
 				$datos['puntos_pendientes'] = 0;
 				$jugador_defensa = json_decode($datos[$sig_jug],true);
 				$jugador_defensa['estado'] = 'ataque';
+
+				$datos['turno_jug'] = $sig_jug;
+				$nombre_jugada = $this->Juego->get_jug_id($posicion, $valores['id_partida']);
+				$nombre_jugada = $this->Usuario->get_nick($nombre_jugada[$posicion]);
+				$datos['ultima_jugada']= $nombre_jugada['nick'] . ' quiere jugar por '.$datos['puntos_ronda'].' puntos.';
 				$datos[$sig_jug] = json_encode($jugador_defensa);
 				$this->Juego->insertar_jugada($datos);
 		} else if ($valores['movimiento'] === 'Mas'){
@@ -159,6 +193,11 @@ class Juegos extends CI_Controller {
 				$datos['puntos_pendientes']+=3;
 				$jugador_defensa = json_decode($datos[$sig_jug],true);
 				$jugador_defensa['estado'] = 'defensa';
+
+				$datos['turno_jug'] = $sig_jug;
+				$nombre_jugada = $this->Juego->get_jug_id($posicion, $valores['id_partida']);
+				$nombre_jugada = $this->Usuario->get_nick($nombre_jugada[$posicion]);
+				$datos['ultima_jugada']= $nombre_jugada['nick'] . ' ve y pide mas puntos ('.$datos['puntos_pendientes'].').';
 				$datos[$sig_jug] = json_encode($jugador_defensa);
 				$this->Juego->insertar_jugada($datos);
 		} else if ($valores['movimiento'] === 'Paso'){
@@ -192,6 +231,11 @@ class Juegos extends CI_Controller {
 			$sig_jug = 'jug_'.$sig_jug;
 			$sig_jug_estado = json_decode($datos[$sig_jug],true);
 			$sig_jug_estado['estado'] = 'ataque';
+
+			$datos['turno_jug'] = $sig_jug;
+			$nombre_jugada = $this->Juego->get_jug_id($posicion, $valores['id_partida']);
+			$nombre_jugada = $this->Usuario->get_nick($nombre_jugada[$posicion]);
+			$datos['ultima_jugada']= $nombre_jugada['nick'] . ' no acepta y pasa ronda.';
 			$datos[$sig_jug] = json_encode($sig_jug_estado);
 			$datos['ronda']++;
 			$num_cards = $datos['ronda'];
@@ -277,6 +321,12 @@ class Juegos extends CI_Controller {
 				$pos_sig_jug = 'jug_'.$pos_sig_jug;
 				$sig_jug = json_decode($datos[$pos_sig_jug],true);
 				$sig_jug['estado'] = 'ataque';
+
+				$datos['turno_jug'] = $pos_sig_jug;
+
+				$nombre_jugada = $this->Juego->get_jug_id($posicion, $valores['id_partida']);
+				$nombre_jugada = $this->Usuario->get_nick($nombre_jugada[$posicion]);
+				$datos['ultima_jugada']= $nombre_jugada['nick'] . ' juega '.$valores['movimiento'];
 				$datos[$pos_sig_jug] = json_encode($sig_jug);
 				$this->Juego->insertar_jugada($datos);
 			} else {
@@ -331,6 +381,11 @@ class Juegos extends CI_Controller {
 					$sig_jug = json_decode($datos[$pos_sig_jug],true);
 					$sig_jug['estado'] = 'ataque';
 					$datos[$pos_sig_jug] = json_encode($sig_jug);
+									$datos['turno_jug'] = $pos_sig_jug;
+
+									$nombre_jugada = $this->Juego->get_jug_id($posicion, $valores['id_partida']);
+									$nombre_jugada = $this->Usuario->get_nick($nombre_jugada[$posicion]);
+									$datos['ultima_jugada']= $nombre_jugada['nick'] . ' juega '.$valores['movimiento'].'.';
 
 				if ($datos['turno'] == 3 || $datos['turno'] == 0){ //cambio de dealer
 					unset($valores_jugador);
@@ -349,9 +404,12 @@ class Juegos extends CI_Controller {
 						}
 						if ($nueva_ronda){
 							$valores_jugador['carta_'.$j] = $baraja[($i*4)-2];
+						} else if ($num_cards == 2){
+							$valores_jugador['carta_'.$j] = $baraja[($i*4)-2+4];
 						} else {
-							$valores_jugador['carta_'.$j] = $baraja[($i*4)+count(json_decode($datos['cartas_jugadas']))-2+$suma];
+							$valores_jugador['carta_'.$j] = $baraja[($i*4)-2+($suma*3)];
 						}
+
 					}
 					$datos[$posicion] = json_encode($valores_jugador);
 
@@ -379,8 +437,10 @@ class Juegos extends CI_Controller {
 						}
 						if ($nueva_ronda){
 							$sig_jug['carta_'.$j] = $baraja[($i*4)-1];
+						} else if ($num_cards == 2){
+							$sig_jug['carta_'.$j] = $baraja[($i*4)-1+4];
 						} else {
-							$sig_jug['carta_'.$j] = $baraja[($i*4)+count(json_decode($datos['cartas_jugadas']))-1+$suma];
+							$sig_jug['carta_'.$j] = $baraja[($i*4)-1+($suma*3)];
 						}
 					}
 					$datos[$pos_sig_jug] = json_encode($sig_jug);
@@ -394,6 +454,7 @@ class Juegos extends CI_Controller {
 					}
 					$pos_sig_jug = 'jug_'.$pos_sig_jug;
 					$sig_jug['estado'] = 'ataque';
+									$datos['turno_jug'] = $pos_sig_jug;
 
 					for ($i = 1; $i <= $num_cards;$i++){
 						switch ($i){
@@ -409,8 +470,10 @@ class Juegos extends CI_Controller {
 						}
 						if ($nueva_ronda){
 							$sig_jug['carta_'.$j] = $baraja[($i*4)-4];
+						} else if ($num_cards == 2){
+							$sig_jug['carta_'.$j] = $baraja[($i*4)-4+4];
 						} else {
-							$sig_jug['carta_'.$j] = $baraja[($i*4)+count(json_decode($datos['cartas_jugadas']))-4+$suma];
+							$sig_jug['carta_'.$j] = $baraja[($i*4)-4+($suma*3)];
 						}
 					}
 					$datos[$pos_sig_jug] = json_encode($sig_jug);
@@ -438,8 +501,10 @@ class Juegos extends CI_Controller {
 						}
 						if ($nueva_ronda){
 							$sig_jug['carta_'.$j] = $baraja[($i*4)-3];
+						} else if ($num_cards == 2){
+							$sig_jug['carta_'.$j] = $baraja[($i*4)-3+4];
 						} else {
-							$sig_jug['carta_'.$j] = $baraja[($i*4)+count(json_decode($datos['cartas_jugadas']))-3+$suma];
+							$sig_jug['carta_'.$j] = $baraja[($i*4)-3+($suma*3)];
 						}
 					}
 					$datos[$pos_sig_jug] = json_encode($sig_jug);
@@ -520,8 +585,10 @@ class Juegos extends CI_Controller {
 					if ($jug_ganador > 4) $jug_ganador -= 4;
 					if ($jug_ganador%2 == 0){//2 o 4 gana equipo 2
 						$datos['puntos_equipo_2'] += $datos['puntos_ronda'];
+						$datos['ultima_jugada'].= 'Equipo 2 gana '.$datos['puntos_ronda'].' puntos.';
 					} else {//1 o 3 equipo 1
 						$datos['puntos_equipo_1'] += $datos['puntos_ronda'];
+						$datos['ultima_jugada'].= 'Equipo 1 gana '.$datos['puntos_ronda'].' puntos.';
 					}
 				}
 				$datos['puntos_ronda'] = 1;
@@ -531,6 +598,7 @@ class Juegos extends CI_Controller {
 					$datos['turno']--;
 				}
 
+				$datos['cartas_jugadas'] = json_encode($baraja[0]);
 				$this->Juego->insertar_jugada($datos);
 			}
 		}
@@ -560,6 +628,8 @@ class Juegos extends CI_Controller {
 				$datos['dealer_id']=1;//sera un num random entre los 4 jugadores
 				$datos['baraja']=json_encode($baraja); /*cartas barajadas/ array cartas tipo 1espada , 3basto, 4copas,12oro */
 				$datos['vida']= $baraja[0];// varchar(20),/* "3oro" */
+
+				$datos['ultima_jugada'].= 'La vida es '.$datos['vida'];
 				$datos['cartas_jugadas'] = json_encode($baraja[0]);/*solo las cartas jugadas, visibles por todos y activas en el turno se renueva tras una ronda con 3 cartas*/
 				$datos['puntos_ronda']=1;// numeric(30) not null default 1,/*en caso de que envie y acepte, se guarda aqui el total*/
 				$datos['puntos_equipo_1']=0;// numeric(80),
@@ -571,6 +641,7 @@ class Juegos extends CI_Controller {
 					if ($numero > 4) $numero -= 4;
 					if ($i == 0) {//pongo el estado correspondiente en el primer turno, el siguiente al dealer ataca, el siguiente a este def y el resto espera
 						$datos_jug['estado'] = 'ataque';
+						$datos['turno_jug'] = 'jug_2';
 					} else {
 						$datos_jug['estado'] = 'esperando_turno';
 					}

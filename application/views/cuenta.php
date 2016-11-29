@@ -1,13 +1,16 @@
 <?php template_set('title', 'Cuenta de usuario') ?>
 
-            <?php if (!logueado()): ?>
 <h2>Cuenta de usuario</h2>
+            <?php if (!logueado()): ?>
         <div class="formulario">
-          <?php if ( ! empty(error_array())): ?>
+          <?php $variable = error_array();
+           if ( ! empty($variable)): ?>
             <div class="alert alert-danger" role="alert">
               <?= validation_errors() ?>
             </div>
           <?php endif ?>
+
+        <?= mensajes() ?>
           <?= form_open('usuarios/login') ?>
             <div class="form-group">
               <?= form_label('Nick:', 'nick') ?>
@@ -25,8 +28,51 @@
 
         </div>
 
-                    <?php else: ?>
-                        <div>
-                          <p>laoalaolaa</p>
-                        </div>
-                    <?php endif;
+        <?php else: ?>
+            <div id="info">
+
+              <p>Usuario: <?= $info_usuario_nick['nick'] ?> </p>
+              <p>Foto de perfil:</p><img src="/images/<?= $info_usuario_foto['foto_perfil'] ?>"></img>
+              <form action="upload.php" method="post" enctype="multipart/form-data">
+                  Select image to upload:
+                  <input type="file" name="fileToUpload" id="fileToUpload">
+                  <input type="submit" value="Upload Image" name="submit">
+              </form>
+            </div>
+            <div class="panel-body">
+              <?php if (isset($filas)) {
+                ?>  <table border="1"
+                         class="table table-striped table-bordered table-hover table-condensed">
+                    <thead>
+                      <th>Nick</th>
+                      <th>Acciones</th>
+                    </thead>
+                    <tbody>
+                      <?php foreach ($filas as $fila): ?>
+                        <tr>
+                          <td><?= $fila['nick'] ?></td>
+                          <td align="center">
+                            <?= anchor('/usuarios/borrar/' . $fila['id'], 'Borrar',
+                                       'class="btn btn-danger btn-xs" role="button"') ?>
+                          </td>
+                        </tr>
+                      <?php endforeach ?>
+                    </tbody>
+                  </table><?php
+              }?>
+
+            </div>
+              <script>
+              $(document).ready(function() {
+                if ($.cookie('jugando') != undefined){
+                  var ancho = screen.availWidth/ 2;
+                  ancho -= 200;
+                  var alto = screen.availHeight/ 2;
+                  alto -= 60;
+                  var myWindow = window.open("<?= base_url() ?>usuarios/recordatorio", "myWindow", "width=400,height=120,left="+ancho+",top="+alto+"");
+
+                }
+
+              });
+              </script>
+          <?php endif;
