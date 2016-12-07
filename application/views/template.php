@@ -48,12 +48,17 @@
               <?php endif;?>
 
             </div>
-                <img src="/images/fotoPerfil.png" itemprop="image" title="Foto de perfil" alt="Profile picture"/>
+
+            <?php if (!logueado()): ?>
+              <img src="/upload/fotoPerfil.png" itemprop="image" title="Foto de perfil" alt="Profile picture"/>
+            <?php else: ?>
+              <img src="/upload/<?= foto(usuario_id())?>" itemprop="image" title="Foto de perfil" alt="Profile picture"/>
+            <?php endif;?>
 
             </article>
         </header>
         <nav>
-            <a href="<?= base_url() ?>juegos/juego" title="Inicio">Home</a>
+            <a href="<?= base_url() ?>juegos/juego" title="Inicio">Inicio</a>
             <a href="<?= base_url() ?>juegos" title="Jugar ahora">Jugar</a>
             <a href="<?= base_url() ?>juegos/tutorial" title="Aprende a jugar">Tutorial</a>
             <a href="<?= base_url() ?>usuarios/cuenta" title="Cuenta de usuario">Perfil</a>

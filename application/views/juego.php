@@ -26,8 +26,8 @@
     </div>
         <canvas id="pantalla" width="800" height="600"></canvas>
 
-                <div style="position: relative; width: 0; height: 0">
-                  <p id="i_estado"></p>
+            <div style="position: relative; width: 0; height: 0">
+              <p id="i_estado"></p>
               <p id="ataque" class="boton">Envio</p>
               <p id="defensa_paso" class="boton">Paso</p>
               <p id="defensa_quiero" class="boton">Quiero</p>
@@ -40,16 +40,27 @@
               <p id="puntos_equipo2" class="punto_info"></p>
               <p id="puntos_pendientes" class="punto_info">Jugando por <span id="cantidad">1</span></p>
               <div id="chat">
-                  <div id="mensajes">
-                  </div>
-                  <form>
-                    <input type="text" id="contenido" placeholder="Escribe tu mensaje">
-                    <div  id="chaterino">
-                      <input type="button" id="enviar" value="Publico">
-                      <input type="button" id="enviar_privado" value="Privado">
-                    </div>
-                  </form>
+                <div id="mensajes">
                 </div>
+                <form>
+                  <input type="text" id="contenido" placeholder="Escribe tu mensaje">
+                  <div  id="chaterino">
+                    <input type="button" id="enviar" value="Publico">
+                    <input type="button" id="enviar_privado" value="Privado">
+                  </div>
+                </form>
+              </div>
+
+              <div id="minijuego">
+                  <div id="barra_f">
+                  </div>
+                  <div id="objetivo"></div>
+                      <div id="barra_s"></div>
+                  <p id="ayuda"></p>
+              </div>
+                <p id="i_ultima">Ultima mano</p>
+                  <p id="i_vida">Vida</p>
+
             </div>
       </div>
   </div>
@@ -72,13 +83,23 @@ var foto2 = "";
 var foto3 = "";
 var foto4 = "";
 var puntos = 0;
+var cartas_jugadas_visibles = [false,false,false,false];
+var cartas_jugadas_visibles2 = [false,false,false,false];
+
+var coordX_cartas= [400,450,500,550,600];
+var coordY_cartas= [175,200,225,250,275];
+var coordX2_cartas= [160,120,80,40];
+
 
 var en_partida = false;
+
+var activo = false;
 $(document).ready(function() {
   $('#menu').hide();
   $('#partida').hide();
   $('#lobby').hide();
   $('#carga').hide();
+      $('#minijuego').hide();
   getEstado();
   setInterval(function(){
     getEstado();
@@ -92,6 +113,53 @@ function darOK(r){/*
   alert("yay");
   alert($.parseJSON(r));*/
 }
+
+function move() {
+    if (!activo && $("#contenido").val() != "") {
+        $('#ayuda').text("Para la barra en el centro");
+        $('#minijuego').fadeIn('slow');
+        activo = true;
+        $('#barra_f').css("background-color", "grey");
+        var elem = document.getElementById("barra_s");
+        var left_o = -630;
+        var left = left_o;
+
+        elem.style.left = left_o;
+        var id = setInterval(frame, 10);
+        var sentido= true;
+        $('#minijuego').click(function() {
+            clearInterval(id);
+            if (left >= left_o + 160 && left <= left_o + 240){
+                $('#barra_f').css("background-color", "green");
+                $('#ayuda').text("Exito");
+                enviar_privado();
+            } else {
+                $('#barra_f').css("background-color", "red");
+                $('#ayuda').text("Fallo");
+                enviar();
+            }
+            activo = false;
+            $('#minijuego').off('click');
+            $('#minijuego').fadeOut('slow');
+        });
+        function frame() {
+            if (left >= left_o+395) {
+                sentido= false;
+            } else if (left <= left_o+5) {
+                sentido= true;
+            }
+
+            if (sentido){
+                left += 5;
+                elem.style.left = left + 'px';
+            } else {
+                left -= 5;
+                elem.style.left = left + 'px';
+            }
+        }
+    }
+}
+
 function mostrar() {
   $.getJSON("<?= base_url() ?>" + 'chats/ver_mensajes', pintar_mensajes);
 }
@@ -120,13 +188,17 @@ function enviar_privado() {
 function pintar_mensajes(r) {
   $('#mensajes').empty();
   for (var cosa in r){
-    $('#mensajes').append('<p><i><b>'+r[cosa].usuario+':</i></b> '+r[cosa].contenido + '</p>');
+    if(r[cosa].privado == ""){
+      $('#mensajes').append('<p><i><b>'+r[cosa].usuario+':</i></b> '+r[cosa].contenido + '</p>');
+    } else {
+      $('#mensajes').append('<p><i><b>'+r[cosa].usuario+':</i></b><span id="msg_privado"> '+r[cosa].contenido + '</span></p>');
+    }
   }
 }
 function pintar_jugadas(r) {
   $('#mensajes_estado').empty();
   for (var cosa in r){
-    $('#mensajes_estado').append('<p>'+r[cosa].ultima_jugada+'</p>');
+    $('#mensajes_estado').append('<p>'+r[cosa].ultima_jugada.replace('_', ' de ')+'</p>');
   }
 }
 
@@ -143,7 +215,6 @@ function salir(){
   $.post("<?= base_url() ?>" + 'juegos/abandonar_partida');
 }
 function pintar_tablero(estado, jugadorino) {
-
   var nicks= [];
   var fotos= [];
   var posiciones = [];
@@ -185,7 +256,7 @@ function pintar_tablero(estado, jugadorino) {
           var coordX2 = [50,300,700];
           var coordY2 = [350,50,350];
           for (var i = 0; i < 3 ; i++){
-            var ruta = 'images/'+fotos[i];
+            var ruta = 'upload/'+fotos[i];
             $('canvas').drawImage({
                 layer: true,
                 source: ruta,
@@ -200,7 +271,7 @@ function pintar_tablero(estado, jugadorino) {
               name: 'vida',
               source: 'images/baraja/'+estado.vida+'.png',
               x: 300, y: 200,
-              height: 120,
+              height: 123,
               bringToFront: true,
               width: 80,
             });
@@ -209,6 +280,7 @@ function pintar_tablero(estado, jugadorino) {
               $.post("<?= base_url() ?>" + 'juegos/abandonar_partida');
             }
           });
+
           //pintmos los nicks
           for (var i = 0; i < 4 ; i++){
             $('canvas').drawText({
@@ -231,7 +303,7 @@ function pintar_tablero(estado, jugadorino) {
             visible: true,//cartas_visibles[0],
             source: 'images/baraja/00_reverso.png',
             x: 300, y: 500,
-            height: 120,
+            height: 123,
             bringToFront: true,
             width: 80,
           });
@@ -244,7 +316,7 @@ function pintar_tablero(estado, jugadorino) {
             visible: true,//cartas_visibles[0],
             source: 'images/baraja/00_reverso.png',
             x: 400, y: 500,
-            height: 120,
+            height: 123,
             bringToFront: true,
             width: 80,
           });
@@ -257,11 +329,47 @@ function pintar_tablero(estado, jugadorino) {
             visible: true,//cartas_visibles[0],
             source: 'images/baraja/00_reverso.png',
             x: 500, y: 500,
-            height: 120,
+            height: 123,
             bringToFront: true,
             width: 80,
           });
 
+
+          //pinto las cartas jugadas
+          for (var j = 1; j<5;j++){
+
+              var nombre_carta = "cartas_jugadas_"+j;
+            $('canvas').drawImage({
+              layer: true,
+              group: 'cartas_jugadas',
+              name: nombre_carta,
+              visible:false,
+              source: 'images/baraja/00_reverso.png',
+              x: coordX_cartas[j-1], y: coordY_cartas[j-1],
+              height: 123,
+              bringToFront: true,
+              width: 80,
+            });
+
+          }
+
+          //pinto las cartas jugadas en la ultima mano
+          for (var j = 0; j<4;j++){
+
+              var nombre_carta = "cj_ultima_mano"+j;
+            $('canvas').drawImage({
+              layer: true,
+              group: 'cj_ultima_mano',
+              name: nombre_carta,
+              visible:false,
+              source: 'images/baraja/00_reverso.png',
+              x: coordX2_cartas[j], y: 240,
+              height: 123,
+              bringToFront: true,
+              width: 80,
+            });
+
+          }
 
         tablero_pintado = true;
         $('#carga').hide();
@@ -275,47 +383,57 @@ function pintar_mano(estado_jug, estado){
       if (estado_jug.carta_dos == cartas_jugadas[j]) cartas_visibles[1] = false;
       if (estado_jug.carta_tres == cartas_jugadas[j]) cartas_visibles[2] = false;
     }
+    var cartas_ultima_mano =$.parseJSON(estado.ultima_mano);
+    for (var j in cartas_ultima_mano) {
+      if (estado_jug.carta_uno == cartas_ultima_mano[j]) cartas_visibles[0] = false;
+      if (estado_jug.carta_dos == cartas_ultima_mano[j]) cartas_visibles[1] = false;
+      if (estado_jug.carta_tres == cartas_ultima_mano[j]) cartas_visibles[2] = false;
+    }
     $('canvas').setLayer('carta1', {
-    visible: cartas_visibles[0],
-    draggable: true,
-    source: 'images/baraja/'+estado_jug.carta_uno+'.png',
-    bringToFront: true,
-    dragstop: function(layer) {
-      var distX, distY;
-      if (layer.eventX > 150 && layer.eventX < 650 && layer.eventY > 100 && layer.eventY < 400) {
-        $.post("<?= base_url() ?>" + 'juegos/nueva_jugada', {
-          movimiento: estado_jug.carta_uno
-        } );
+      visible: cartas_visibles[0],
+      draggable: true,
+      x: 300, y: 500,
+      source: 'images/baraja/'+estado_jug.carta_uno+'.png',
+      bringToFront: true,
+      dragstop: function(layer) {
+        var distX, distY;
+        if (layer.eventX > 150 && layer.eventX < 650 && layer.eventY > 100 && layer.eventY < 400) {
+          $.post("<?= base_url() ?>" + 'juegos/nueva_jugada', {
+            movimiento: estado_jug.carta_uno
+          } );
+        }
       }
-    }
-  }).drawLayers();
-  if (estado_jug.hasOwnProperty("carta_dos")) {
-    $('canvas').setLayer('carta2', {
-    visible: cartas_visibles[1],
-    draggable: true,
-    source: 'images/baraja/'+estado_jug.carta_dos+'.png',
-    bringToFront: true,
-    dragstop: function(layer) {
-      var distX, distY;
-      if (layer.eventX > 150 && layer.eventX < 650 && layer.eventY > 100 && layer.eventY < 400) {
-        $.post("<?= base_url() ?>" + 'juegos/nueva_jugada', {
-          movimiento: estado_jug.carta_dos
-        });
+    }).drawLayers();
+    if (estado_jug.hasOwnProperty("carta_dos")) {
+      $('canvas').setLayer('carta2', {
+      visible: cartas_visibles[1],
+      draggable: true,
+      source: 'images/baraja/'+estado_jug.carta_dos+'.png',
+      bringToFront: true,
+      x: 400, y: 500,
+      dragstop: function(layer) {
+        var distX, distY;
+        if (layer.eventX > 150 && layer.eventX < 650 && layer.eventY > 100 && layer.eventY < 400) {
+          $.post("<?= base_url() ?>" + 'juegos/nueva_jugada', {
+            movimiento: estado_jug.carta_dos
+          });
+        }
       }
+      }).drawLayers();
+    } else {
+      $('canvas').setLayer('carta2', {
+        visible: true,
+        draggable: false,
+        source: 'images/baraja/00_reverso.png',
+        x: 400, y: 500,
+        bringToFront: true
+      }).drawLayers();
     }
-    }).drawLayers();
-  } else {
-    $('canvas').setLayer('carta2', {
-      visible: true,
-      draggable: false,
-      source: 'images/baraja/00_reverso.png',
-      bringToFront: true
-    }).drawLayers();
-  }
-  if (estado_jug.hasOwnProperty("carta_dos")) {
+  if (estado_jug.hasOwnProperty("carta_tres")) {
     $('canvas').setLayer('carta3', {
     visible: cartas_visibles[2],
     draggable: true,
+    x: 500, y: 500,
     source: 'images/baraja/'+estado_jug.carta_tres+'.png',
     bringToFront: true,
     dragstop: function(layer) {
@@ -332,32 +450,53 @@ function pintar_mano(estado_jug, estado){
       visible: true,
       draggable: false,
       source: 'images/baraja/00_reverso.png',
+      x: 500, y: 500,
       bringToFront: true
     }).drawLayers();
   }
 }
 function pintar_cartas_jugadas(estado){
 
-  if ($.parseJSON(estado.cartas_jugadas) != estado.vida){
+  //if ($.parseJSON(estado.cartas_jugadas) != estado.vida){
     //alert("time to pintar cartas");
 
-       cartas_jugadas =$.parseJSON(estado.cartas_jugadas);
+    if (typeof $.parseJSON(estado.cartas_jugadas) == "string") {
+      cartas_jugadas_visibles = [false,false,false,false];
+    } else {
+        cartas_jugadas =$.parseJSON(estado.cartas_jugadas);
 
-    coordX_cartas= [400,450,500,550,600];
-    coordY_cartas= [175,200,225,250,275];
-    for (var j = 1; j<cartas_jugadas.length;j++){
+        for (var j = 1; j<cartas_jugadas.length;j++){
+          cartas_jugadas_visibles[j-1] = true;
+            var nombre_carta = "cartas_jugadas_"+j;
+            $('canvas').setLayer(nombre_carta ,{
+              source: 'images/baraja/'+cartas_jugadas[j]+'.png',
+            });
+        }
+    }
+    for (var j = 1; j<5;j++){
+      var nombre_carta = "cartas_jugadas_"+j;
+        $('canvas').setLayer(nombre_carta ,{
+          visible: cartas_jugadas_visibles[j-1],
+        });
+    }
 
-      $('canvas').drawImage({
-        layer: true,
-        group: 'cartas_jugadas',
-        source: 'images/baraja/'+cartas_jugadas[j]+'.png',
-        x: coordX_cartas[j-1], y: coordY_cartas[j-1],
-        height: 120,
-        bringToFront: true,
-        width: 80,
+    //actualizo cartas ultima mano
+
+    var ultima_mano =$.parseJSON(estado.ultima_mano);
+    for (var j = 0; j<ultima_mano.length;j++){
+      cartas_jugadas_visibles2[j] = true;
+      var nombre_carta = "cj_ultima_mano"+j;
+      $('canvas').setLayer(nombre_carta ,{
+        source: 'images/baraja/'+ultima_mano[j]+'.png',
       });
     }
-  }
+    for (var j = 0; j<4;j++){
+      var nombre_carta = "cj_ultima_mano"+j;
+        $('canvas').setLayer(nombre_carta ,{
+          visible: cartas_jugadas_visibles2[j],
+        });
+    }
+  //}
   cartas_jugadas = $.parseJSON(estado.cartas_jugadas);
 
 }
@@ -394,7 +533,10 @@ function pintar_partida(r) {
   if (!tablero_pintado){
     pintar_tablero(estado,jugadorino);
     pintar_mano(estado_jug, estado);
+    pintar_cartas_jugadas(estado);
+    mostrar_jugadas();
   }
+
 
   var active_player = estado.turno_jug;
   active_player = active_player.substr(active_player.length - 1);
@@ -738,7 +880,7 @@ $('canvas').drawText({
     name: 'baraja',
     source: 'images/baraja/00_reverso.png',
     x: 270, y: 270,
-    height: 120,
+    height: 123,
     width: 80,
   });
   $('canvas').drawImage({
@@ -746,7 +888,7 @@ $('canvas').drawText({
     name: 'vida',
     source: 'images/baraja/'+estado.vida+'.png',
     x: 300, y: 300,
-    height: 120,
+    height: 123,
     bringToFront: true,
     width: 80,
   });
@@ -779,7 +921,7 @@ if (typeof estado.vida == typeof $.parseJSON(estado.cartas_jugadas)) {
       group: 'cartas_jugadas',
       source: 'images/baraja/'+cartas_jugadas[j]+'.png',
       x: coordX_cartas[j-1], y: coordY_cartas[j-1],
-      height: 120,
+      height: 123,
       bringToFront: true,
       width: 80,
     });
@@ -832,7 +974,7 @@ $('canvas').setLayer('carta1', {
     visible: cartas_visibles[0],
     source: 'images/baraja/'+estado_jug.carta_uno+'.png',
     x: 300, y: 500,
-    height: 120,
+    height: 123,
     bringToFront: true,
     width: 80,
     /*
@@ -861,7 +1003,7 @@ $('canvas').setLayer('carta1', {
         visible: cartas_visibles[1],
         source: 'images/baraja/'+estado_jug.carta_dos+'.png',
         x: 400, y: 480,
-        height: 120,
+        height: 123,
         bringToFront: true,
         width: 80,
         dragstop: function(layer) {
@@ -897,7 +1039,7 @@ $('canvas').setLayer('carta1', {
       group: 'cartas',
       source: 'images/baraja/'+estado_jug.carta_tres+'.png',
       x: 500, y: 500,
-      height: 120,
+      height: 123,
       visible: cartas_visibles[2],
       bringToFront: true,
       width: 80,
@@ -1059,7 +1201,12 @@ function pintar(r){
           $.cookie('jugando', 'true', { expires: 1, path: '/' });
       } else if (estado['estado'] == "jugando"){
         $('.estado').text('En partida  ');
-        if (!en_partida)        $('#carga').show();
+        if (!en_partida)    {
+          $('#carga').show();
+        }
+        if (carga >= 100){
+          clearInterval(barracarga);
+        }
         en_partida = true;
         nick1 = estado.jug_1_nick;
         nick2 = estado.jug_2_nick;
@@ -1077,7 +1224,7 @@ function pintar(r){
             if(e.keyCode == 13){      enviar();        }//intro
           });
           $("#enviar").click(enviar);
-          $("#enviar_privado").click(enviar_privado);
+          $("#enviar_privado").click(move);
           $.cookie('jugando', 'true', { expires: 1, path: '/' });
       }
     } else {

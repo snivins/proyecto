@@ -255,6 +255,9 @@ class Juegos extends CI_Controller {
 				$datos['turno'] = 0;
 			}
 
+			$datos['ultima_mano'] = json_decode($datos['cartas_jugadas']);
+			array_shift($datos['ultima_mano']);
+			$datos['ultima_mano'] = json_encode($datos['ultima_mano']);
 			if ($nueva_ronda) {
 				$baraja = $this->barajar();
 				$datos['baraja'] = json_encode($baraja);
@@ -329,7 +332,7 @@ class Juegos extends CI_Controller {
 				$datos['ultima_jugada']= $nombre_jugada['nick'] . ' juega '.$valores['movimiento'];
 				$datos[$pos_sig_jug] = json_encode($sig_jug);
 				$this->Juego->insertar_jugada($datos);
-			} else {
+			} else {//se han jugado 4 cartas
 				$datos['turno_ronda'] = 1;
 
 				if ($datos['turno'] == 0){
@@ -360,6 +363,9 @@ class Juegos extends CI_Controller {
 					$suma= 4;
 				}
 
+				$datos['ultima_mano'] = json_decode($datos['cartas_jugadas']);
+				array_shift($datos['ultima_mano']);
+				$datos['ultima_mano'] = json_encode($datos['ultima_mano']);
 				if ($nueva_ronda) {
 					$baraja = $this->barajar();
 					$datos['baraja'] = json_encode($baraja);

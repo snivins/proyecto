@@ -175,6 +175,52 @@ width: 156px;
         height: 80%;
     }
 }
+#minijuego {
+    position: absolute;
+    cursor:pointer;
+}
+#exito {
+  background-color: green;
+}
+#barra_f {
+    position: absolute;
+    width: 400px;
+    height: 30px;
+    left: -630px;
+    top:-100px;
+    background-color: grey;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+}
+#barra_s {
+    position: absolute;
+    width: 5px;
+    height: 30px;
+    left: -630px;
+    top:-100px;
+    background-color: #ea1a1a;
+}
+#objetivo {
+    position: absolute;
+    width: 80px;
+    height: 30px;
+    left: -470px;
+    top:-100px;
+    background-color: orange;
+}
+#ayuda {
+    position: absolute;
+    height: 30px;
+    left: -580px;
+    width: 300px;
+    top:-100px;
+    font-size: 20px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+
 .boton {
   cursor:pointer;
     font-size: 20px;
@@ -291,8 +337,8 @@ box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.75);
 }
 #mensajes_estado {
   position:absolute;
-  left: -870px;
-  top:140px;
+  left: -890px;
+  top:130px;
     white-space: nowrap;
     color: black;
   background-color: rgba(37,183,191,0.4) ;
@@ -309,14 +355,43 @@ box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.75);
     background-color: grey;
     text-align: center;
 }
+#msg_privado{
+    color: red;
+}
 #i_estado {
   position: absolute;
   font-size: 20px;
   color: white;
 background-color: rgba(0,0,0,0.3) ;
 padding: 0px 10px;
-  left: -550px;
-  top: 110px;
+  left: -460px;
+  top: -290px;
+-webkit-border-radius: 5px;
+-moz-border-radius: 5px;
+border-radius: 5px;
+  white-space: nowrap;
+}
+#i_ultima {
+  position: absolute;
+  font-size: 20px;
+  color: white;
+background-color: rgba(0,0,0,0.7) ;
+padding: 0px 10px;
+  left: -765px;
+  top: -30px;
+-webkit-border-radius: 5px;
+-moz-border-radius: 5px;
+border-radius: 5px;
+  white-space: nowrap;
+}
+#i_vida {
+  position: absolute;
+  font-size: 20px;
+  color: white;
+background-color: rgba(0,0,0,0.7) ;
+padding: 0px 10px;
+  left: -540px;
+  top: -70px;
 -webkit-border-radius: 5px;
 -moz-border-radius: 5px;
 border-radius: 5px;
@@ -410,6 +485,7 @@ nav {
    display: flex;
     justify-content: space-between;
     background-color: #41CDF0;
+
 }
 nav > a {
     text-decoration: none;
@@ -418,6 +494,7 @@ nav > a {
     text-align: center;
     padding: 5px;
     color: black;
+
 }
 header > a > img {
     width: 80px;
@@ -435,7 +512,6 @@ section {
     background-color: #41CDF0;
 }
 footer {
-    height: 50px;
     background: rgba(65,205,240,1);
 background: -moz-linear-gradient(top, rgba(65,205,240,1) 0%, rgba(24,43,169,1) 100%);
 background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(65,205,240,1)), color-stop(100%, rgba(24,43,169,1)));

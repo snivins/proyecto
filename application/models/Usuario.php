@@ -39,6 +39,12 @@ class Usuario extends CI_Model
 	{
     return $this->db->query("select foto_perfil from usuarios where id='$id'")->row_array();
 	}
+	public function set_foto($id, $foto_perfil)
+	{
+
+	  $pos['foto_perfil']= $foto_perfil;
+    $this->db->where('id', $id)->update('usuarios', $pos);
+	}
   public function set_posicion($id,$posicion)
   {
     $pos['posicion']= $posicion;

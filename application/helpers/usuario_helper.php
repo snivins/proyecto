@@ -48,3 +48,12 @@ function nick($usuario_id)
         return $usuario['nick'];
     }
 }
+function foto($usuario_id)
+{
+    $CI =& get_instance();
+    $usuario =  $CI->Usuario->por_id($usuario_id);
+    if ($usuario !== FALSE)
+    {
+        return $usuario['foto_perfil'];
+    }
+}

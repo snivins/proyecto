@@ -36,7 +36,34 @@ class Usuarios extends CI_Controller {
   public function index(){
     redirect('usuarios/cuenta');
   }
+  public function foto_perfil()
+  {
+          $config['upload_path']          = './upload/';
+          $config['allowed_types']        = 'gif|jpg|png';
+          $config['max_size']             = 100;
+          $config['max_width']            = 500;
+          $config['max_height']           = 500;
+          $usuario_nick = $this->Usuario->get_nick($this->session->userdata('usuario')['id']);
+          $config['file_name'] = $usuario_nick['nick'] . '.jpg';
 
+          $this->load->library('upload', $config);
+
+          if ( ! $this->upload->do_upload('foto'))
+          {
+                  $datos['error'] = $this->upload->display_errors();
+          }
+          else
+          {
+                  $datos['exito'] = 'Tu foto de perfil se ha actualizado con exito';
+                  $this->Usuario->set_foto($this->session->userdata('usuario')['id'], $config['file_name']);                  
+          }
+          if ($this->Usuario->logueado() && $this->session->userdata('usuario')['id']  === "1") {
+            $datos['filas'] = $this->Usuario->get_usuarios();
+          }
+            $datos['info_usuario_nick'] = $this->Usuario->get_nick($this->session->userdata('usuario')['id']);
+            $datos['info_usuario_foto'] = $this->Usuario->get_foto($this->session->userdata('usuario')['id']);
+          $this->template->load('cuenta', $datos);
+  }
   public function cuenta(){
     if ($this->Usuario->logueado() && $this->session->userdata('usuario')['id']  === "1") {
       $datos['filas'] = $this->Usuario->get_usuarios();

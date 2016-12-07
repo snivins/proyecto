@@ -23,7 +23,7 @@
                                 'id="password" class="form-control"') ?>
             </div>
             <?= form_submit('login', 'Login', 'class="btn btn-success"') ?>
-            <?= anchor('/usuarios/registrar', 'Registrame', 'class="btn btn-info" role="button"') ?>
+            <?= anchor('/usuarios/registro', 'Registrame', 'class="btn btn-info" role="button"') ?>
           <?= form_close() ?>
 
         </div>
@@ -32,12 +32,29 @@
             <div id="info">
 
               <p>Usuario: <?= $info_usuario_nick['nick'] ?> </p>
-              <p>Foto de perfil:</p><img src="/images/<?= $info_usuario_foto['foto_perfil'] ?>"></img>
-              <form action="upload.php" method="post" enctype="multipart/form-data">
-                  Select image to upload:
-                  <input type="file" name="fileToUpload" id="fileToUpload">
-                  <input type="submit" value="Upload Image" name="submit">
-              </form>
+              <p>Foto de perfil:</p><img src="/upload/<?= $info_usuario_foto['foto_perfil'] ?>"></img>
+
+
+<?php echo form_open_multipart('usuarios/foto_perfil');?>
+
+<input type="file" name="foto" size="20" />
+
+<?php
+ if ( ! empty($error)): ?>
+  <div class="alert alert-danger" role="alert">
+    <?= $error ?>
+  </div>
+<?php endif ?>
+<?php
+ if ( ! empty($exito)): ?>
+  <div id="exito">
+    Imagen subida con exito
+  </div>
+<?php endif ?>
+
+<input type="submit" value="upload" />
+
+</form>
             </div>
             <div class="panel-body">
               <?php if (isset($filas)) {
