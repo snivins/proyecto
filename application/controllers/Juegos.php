@@ -255,13 +255,18 @@ class Juegos extends CI_Controller {
 				$datos['turno'] = 0;
 			}
 
+			$datos['cartas_jugadas_totales'] = json_decode($datos['ultima_mano']);
 			$datos['ultima_mano'] = json_decode($datos['cartas_jugadas']);
 			array_shift($datos['ultima_mano']);
+			foreach ($datos['ultima_mano'] as $key => $value) {
+				$datos['cartas_jugadas_totales'][] = $value;
+			}
 			$datos['ultima_mano'] = json_encode($datos['ultima_mano']);
 			if ($nueva_ronda) {
 				$baraja = $this->barajar();
 				$datos['baraja'] = json_encode($baraja);
 				$datos['cartas_jugadas'] = json_encode($baraja[0]);
+				$datos['cartas_jugadas_totales'] = json_encode($baraja[0]);
 			} else {
 				$baraja = json_decode($datos['baraja']);
 			}
@@ -363,13 +368,18 @@ class Juegos extends CI_Controller {
 					$suma= 4;
 				}
 
+				$datos['cartas_jugadas_totales'] = json_decode($datos['ultima_mano']);
 				$datos['ultima_mano'] = json_decode($datos['cartas_jugadas']);
 				array_shift($datos['ultima_mano']);
+				foreach ($datos['ultima_mano'] as $key => $value) {
+					$datos['cartas_jugadas_totales'][] = $value;
+				}
 				$datos['ultima_mano'] = json_encode($datos['ultima_mano']);
 				if ($nueva_ronda) {
 					$baraja = $this->barajar();
 					$datos['baraja'] = json_encode($baraja);
 					$datos['cartas_jugadas'] = json_encode($baraja[0]);
+					$datos['cartas_jugadas_totales'] = json_encode($baraja[0]);
 				} else {
 					$baraja = json_decode($datos['baraja']);
 				}
@@ -409,11 +419,11 @@ class Juegos extends CI_Controller {
 							break;
 						}
 						if ($nueva_ronda){
-							$valores_jugador['carta_'.$j] = $baraja[($i*4)-2];
+							$valores_jugador['carta_'.$j] = $baraja[($i*4)-1];
 						} else if ($num_cards == 2){
-							$valores_jugador['carta_'.$j] = $baraja[($i*4)-2+4];
+							$valores_jugador['carta_'.$j] = $baraja[($i*4)-1+4];
 						} else {
-							$valores_jugador['carta_'.$j] = $baraja[($i*4)-2+($suma*3)];
+							$valores_jugador['carta_'.$j] = $baraja[($i*4)-1+($suma*3)];
 						}
 
 					}
@@ -442,11 +452,11 @@ class Juegos extends CI_Controller {
 							break;
 						}
 						if ($nueva_ronda){
-							$sig_jug['carta_'.$j] = $baraja[($i*4)-1];
+							$sig_jug['carta_'.$j] = $baraja[($i*4)];
 						} else if ($num_cards == 2){
-							$sig_jug['carta_'.$j] = $baraja[($i*4)-1+4];
+							$sig_jug['carta_'.$j] = $baraja[($i*4)+4];
 						} else {
-							$sig_jug['carta_'.$j] = $baraja[($i*4)-1+($suma*3)];
+							$sig_jug['carta_'.$j] = $baraja[($i*4)+($suma*3)];
 						}
 					}
 					$datos[$pos_sig_jug] = json_encode($sig_jug);
@@ -475,11 +485,11 @@ class Juegos extends CI_Controller {
 							break;
 						}
 						if ($nueva_ronda){
-							$sig_jug['carta_'.$j] = $baraja[($i*4)-4];
+							$sig_jug['carta_'.$j] = $baraja[($i*4)-3];
 						} else if ($num_cards == 2){
-							$sig_jug['carta_'.$j] = $baraja[($i*4)-4+4];
+							$sig_jug['carta_'.$j] = $baraja[($i*4)-3+4];
 						} else {
-							$sig_jug['carta_'.$j] = $baraja[($i*4)-4+($suma*3)];
+							$sig_jug['carta_'.$j] = $baraja[($i*4)-3+($suma*3)];
 						}
 					}
 					$datos[$pos_sig_jug] = json_encode($sig_jug);
@@ -506,11 +516,11 @@ class Juegos extends CI_Controller {
 							break;
 						}
 						if ($nueva_ronda){
-							$sig_jug['carta_'.$j] = $baraja[($i*4)-3];
+							$sig_jug['carta_'.$j] = $baraja[($i*4)-2];
 						} else if ($num_cards == 2){
-							$sig_jug['carta_'.$j] = $baraja[($i*4)-3+4];
+							$sig_jug['carta_'.$j] = $baraja[($i*4)-2+4];
 						} else {
-							$sig_jug['carta_'.$j] = $baraja[($i*4)-3+($suma*3)];
+							$sig_jug['carta_'.$j] = $baraja[($i*4)-2+($suma*3)];
 						}
 					}
 					$datos[$pos_sig_jug] = json_encode($sig_jug);
@@ -637,6 +647,7 @@ class Juegos extends CI_Controller {
 
 				$datos['ultima_jugada'].= 'La vida es '.$datos['vida'];
 				$datos['cartas_jugadas'] = json_encode($baraja[0]);/*solo las cartas jugadas, visibles por todos y activas en el turno se renueva tras una ronda con 3 cartas*/
+				$datos['cartas_jugadas_totales'] = $datos['cartas_jugadas'];
 				$datos['puntos_ronda']=1;// numeric(30) not null default 1,/*en caso de que envie y acepte, se guarda aqui el total*/
 				$datos['puntos_equipo_1']=0;// numeric(80),
 				$datos['puntos_equipo_2']=0;

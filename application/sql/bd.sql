@@ -82,6 +82,7 @@ create table jugadas (
   vida varchar(20),/* "3oro" */
   cartas_jugadas json,/*solo las cartas jugadas y activas en el turno se renueva tras una ronda con 3 cartas*/
   ultima_mano json,/*cartas en mesa pero que no cuentan*/
+  cartas_jugadas_totales json,/*cartas jugadas en la ronda*/
   puntos_pendientes numeric(30) not null default 0,
   puntos_ronda numeric(30) not null default 1,/*en caso de que envie y acepte, se guarda aqui el total*/
   puntos_equipo_1 numeric(80),

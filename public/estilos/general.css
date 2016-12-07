@@ -93,11 +93,16 @@ width: 156px;
     max-height: 225px;
     min-height: 225px;
   }
+  #contenido {
+    width: 161px;
+  }
   #enviar{
-    width: 85px;
+    width: 95px;
+    margin-left: 3px;
+    margin-right: 3px;
   }
   #enviar_privado{
-    width: 85px;
+    width: 95px;
   }
   #juego {
     min-height: 400px;

@@ -66,7 +66,7 @@ class Juego extends CI_Model
 		$posicion = $valores['posicion'];
 		$id_partida = $valores['id_partida'];
 		return $this->db->query("select id, vida, cartas_jugadas, puntos_ronda,
-		 												puntos_equipo_1,puntos_equipo_2, $posicion, puntos_pendientes,turno_jug, ultima_mano
+		 												puntos_equipo_1,puntos_equipo_2, $posicion, puntos_pendientes,turno_jug, ultima_mano, cartas_jugadas_totales
 														from jugadas where id_partida= $id_partida order by id desc")->row_array();
 	}
 	public function get_mensajes($id_partida)
@@ -78,7 +78,7 @@ class Juego extends CI_Model
 	{
 		return $this->db->query("select id_partida,turno, ronda, turno_ronda, dealer_id, vida,
 														baraja, cartas_jugadas, puntos_ronda,	puntos_equipo_1,puntos_equipo_2,
-														jug_1,jug_2,jug_3,jug_4,puntos_pendientes,ultima_mano	from jugadas
+														jug_1,jug_2,jug_3,jug_4,puntos_pendientes,ultima_mano, cartas_jugadas_totales	from jugadas
 														where id_partida= $id_partida order by id desc")->row_array();
 	}
 	public function set_jugada($valores){

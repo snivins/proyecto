@@ -218,7 +218,8 @@ function pintar_tablero(estado, jugadorino) {
   var nicks= [];
   var fotos= [];
   var posiciones = [];
-  var activo = estado.activo;
+  var activo = estado.turno_jug.replace('jug_',"");
+  //var activo = estado.activo;
   switch (jugadorino){
     case 1:
       nicks = [nick1, nick2, nick3, nick4];
@@ -377,17 +378,17 @@ function pintar_tablero(estado, jugadorino) {
 }
 function pintar_mano(estado_jug, estado){
     var cartas_visibles = [true,true,true];
+    var cartas_jugadas_totales =$.parseJSON(estado.cartas_jugadas_totales);
+    for (var j in cartas_jugadas_totales) {
+      if (estado_jug.carta_uno == cartas_jugadas_totales[j]) cartas_visibles[0] = false;
+      if (estado_jug.carta_dos == cartas_jugadas_totales[j]) cartas_visibles[1] = false;
+      if (estado_jug.carta_tres == cartas_jugadas_totales[j]) cartas_visibles[2] = false;
+    }
     var cartas_jugadas =$.parseJSON(estado.cartas_jugadas);
     for (var j in cartas_jugadas) {
       if (estado_jug.carta_uno == cartas_jugadas[j]) cartas_visibles[0] = false;
       if (estado_jug.carta_dos == cartas_jugadas[j]) cartas_visibles[1] = false;
       if (estado_jug.carta_tres == cartas_jugadas[j]) cartas_visibles[2] = false;
-    }
-    var cartas_ultima_mano =$.parseJSON(estado.ultima_mano);
-    for (var j in cartas_ultima_mano) {
-      if (estado_jug.carta_uno == cartas_ultima_mano[j]) cartas_visibles[0] = false;
-      if (estado_jug.carta_dos == cartas_ultima_mano[j]) cartas_visibles[1] = false;
-      if (estado_jug.carta_tres == cartas_ultima_mano[j]) cartas_visibles[2] = false;
     }
     $('canvas').setLayer('carta1', {
       visible: cartas_visibles[0],
@@ -483,6 +484,8 @@ function pintar_cartas_jugadas(estado){
     //actualizo cartas ultima mano
 
     var ultima_mano =$.parseJSON(estado.ultima_mano);
+    if (ultima_mano != null) {
+      cartas_jugadas_visibles2= [false,false,false,false];
     for (var j = 0; j<ultima_mano.length;j++){
       cartas_jugadas_visibles2[j] = true;
       var nombre_carta = "cj_ultima_mano"+j;
@@ -495,6 +498,8 @@ function pintar_cartas_jugadas(estado){
         $('canvas').setLayer(nombre_carta ,{
           visible: cartas_jugadas_visibles2[j],
         });
+    }
+
     }
   //}
   cartas_jugadas = $.parseJSON(estado.cartas_jugadas);
@@ -540,6 +545,7 @@ function pintar_partida(r) {
 
   var active_player = estado.turno_jug;
   active_player = active_player.substr(active_player.length - 1);
+    $('#i_estado').text("Turno de "+nicks_fijos[active_player - 1]);
   //alert(nicks_fijos[active_player - 1]);
   if (estado_jug.estado != estado_jugador){
     if (estado_jug.estado == "ataque"){
@@ -575,7 +581,6 @@ function pintar_partida(r) {
         } );
       });
     } else  {
-      $('#i_estado').text("Turno de "+nicks_fijos[active_player - 1]);
       $('#ataque').fadeTo("slow", 0.35);
       $('#defensa_mas').fadeTo("slow", 0.35);
       $('#defensa_quiero').fadeTo("slow", 0.35);
