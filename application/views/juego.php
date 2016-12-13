@@ -17,7 +17,7 @@
         <p>Jugador 1: <span id="nick_1"></span><br />Jugador 2: <span id="nick_2"></span><br /> Jugador 3: <span id="nick_3"></span><br /> Jugador 4: <span id="nick_4"></span></p>
       </div>
       <div id="carga">
-        <div id="proceso">Cargando ...</div>
+        <div id="proceso">Cargando <i class="fa fa-spinner fa-pulse"></i></div>
       </div>
       <div id="partida">
 
@@ -60,7 +60,6 @@
               </div>
                 <p id="i_ultima">Ultima mano</p>
                   <p id="i_vida">Vida</p>
-
             </div>
       </div>
   </div>
@@ -86,8 +85,10 @@ var puntos = 0;
 var cartas_jugadas_visibles = [false,false,false,false];
 var cartas_jugadas_visibles2 = [false,false,false,false];
 
+  var nicks= [];
+
 var coordX_cartas= [400,450,500,550,600];
-var coordY_cartas= [175,200,225,250,275];
+var coordY_cartas= [200,225,250,275,300];
 var coordX2_cartas= [160,120,80,40];
 
 
@@ -198,7 +199,7 @@ function pintar_mensajes(r) {
 function pintar_jugadas(r) {
   $('#mensajes_estado').empty();
   for (var cosa in r){
-    $('#mensajes_estado').append('<p>'+r[cosa].ultima_jugada.replace('_', ' de ')+'</p>');
+    $('#mensajes_estado').append('<p>'+r[cosa].ultima_jugada.replace('_', ' de ').replace('.', '<br>')+'</p>');
   }
 }
 
@@ -215,7 +216,6 @@ function salir(){
   $.post("<?= base_url() ?>" + 'juegos/abandonar_partida');
 }
 function pintar_tablero(estado, jugadorino) {
-  var nicks= [];
   var fotos= [];
   var posiciones = [];
   var activo = estado.turno_jug.replace('jug_',"");
@@ -294,6 +294,39 @@ function pintar_tablero(estado, jugadorino) {
             });
           }
 
+          //pinto las zonas remarcadas, cartas en juego, mano y ultima mano
+          $('canvas').drawRect({
+            layer: true,
+            name: "zona_cartas",
+            strokeStyle: '#ccc',
+            strokeWidth: 4,
+            x: 420, y: 260,
+            width: 410,
+            height: 270,
+            cornerRadius: 10
+          });//800 600 215-420-625 125-260-395
+
+          $('canvas').drawRect({
+            layer: true,
+            name: "zona_mano",
+            strokeStyle: '#000',
+            strokeWidth: 4,
+            x: 400, y: 510,
+            width: 330,
+            height: 170,
+            cornerRadius: 10
+          });
+
+          $('canvas').drawRect({
+            layer: true,
+            name: "zona_ultima_mano",
+            strokeStyle: '#009',
+            strokeWidth: 4,
+            x: 90, y: 240,
+            width: 230,
+            height: 130,
+            cornerRadius: 10
+          });
 
           //pintamos las 3 cartas
           $('canvas').drawImage({
@@ -301,7 +334,7 @@ function pintar_tablero(estado, jugadorino) {
             draggable: false,//arrastrable
             name: 'carta1',
             group: 'cartas',
-            visible: true,//cartas_visibles[0],
+            visible: false,//cartas_visibles[0],
             source: 'images/baraja/00_reverso.png',
             x: 300, y: 500,
             height: 123,
@@ -314,7 +347,7 @@ function pintar_tablero(estado, jugadorino) {
             draggable: false,//arrastrable
             name: 'carta2',
             group: 'cartas',
-            visible: true,//cartas_visibles[0],
+            visible: false,//cartas_visibles[0],
             source: 'images/baraja/00_reverso.png',
             x: 400, y: 500,
             height: 123,
@@ -327,7 +360,7 @@ function pintar_tablero(estado, jugadorino) {
             draggable: false,//arrastrable
             name: 'carta3',
             group: 'cartas',
-            visible: true,//cartas_visibles[0],
+            visible: false,//cartas_visibles[0],
             source: 'images/baraja/00_reverso.png',
             x: 500, y: 500,
             height: 123,
@@ -371,7 +404,6 @@ function pintar_tablero(estado, jugadorino) {
             });
 
           }
-
         tablero_pintado = true;
         $('#carga').hide();
         $('#partida').show();
@@ -398,12 +430,12 @@ function pintar_mano(estado_jug, estado){
       bringToFront: true,
       dragstop: function(layer) {
         var distX, distY;
-        if (layer.eventX > 150 && layer.eventX < 650 && layer.eventY > 100 && layer.eventY < 400) {
+        if (layer.eventX > 215 && layer.eventX < 625 && layer.eventY > 125 && layer.eventY < 395) {
           $.post("<?= base_url() ?>" + 'juegos/nueva_jugada', {
             movimiento: estado_jug.carta_uno
           } );
         }
-      }
+      }//800 600 215-420-625 125-260-395
     }).drawLayers();
     if (estado_jug.hasOwnProperty("carta_dos")) {
       $('canvas').setLayer('carta2', {
@@ -414,7 +446,7 @@ function pintar_mano(estado_jug, estado){
       x: 400, y: 500,
       dragstop: function(layer) {
         var distX, distY;
-        if (layer.eventX > 150 && layer.eventX < 650 && layer.eventY > 100 && layer.eventY < 400) {
+        if (layer.eventX > 215 && layer.eventX < 625 && layer.eventY > 125 && layer.eventY < 395) {
           $.post("<?= base_url() ?>" + 'juegos/nueva_jugada', {
             movimiento: estado_jug.carta_dos
           });
@@ -439,7 +471,7 @@ function pintar_mano(estado_jug, estado){
     bringToFront: true,
     dragstop: function(layer) {
       var distX, distY;
-      if (layer.eventX > 150 && layer.eventX < 650 && layer.eventY > 100 && layer.eventY < 400) {
+      if (layer.eventX > 215 && layer.eventX < 625 && layer.eventY > 125 && layer.eventY < 395) {
         $.post("<?= base_url() ?>" + 'juegos/nueva_jugada', {
           movimiento: estado_jug.carta_tres
         });
@@ -528,7 +560,7 @@ function pintar_partida(r) {
   } else {
     $('#cantidad').text(estado.puntos_ronda + " puntos");
   }
-  if(estado.turno_jug != ultimo_jug){
+  if(estado.turno_jug != ultimo_jug || estado_jug.estado != estado_jugador){
       pintar_cartas_jugadas(estado);
       pintar_mano(estado_jug, estado);
 
@@ -542,10 +574,13 @@ function pintar_partida(r) {
     mostrar_jugadas();
   }
 
-
   var active_player = estado.turno_jug;
   active_player = active_player.substr(active_player.length - 1);
+  if (nicks_fijos[active_player - 1] == nicks[0]) {
+    $('#i_estado').text("Tu turno");
+  } else {
     $('#i_estado').text("Turno de "+nicks_fijos[active_player - 1]);
+  }
   //alert(nicks_fijos[active_player - 1]);
   if (estado_jug.estado != estado_jugador){
     if (estado_jug.estado == "ataque"){

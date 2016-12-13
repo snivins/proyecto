@@ -55,7 +55,7 @@ class Usuarios extends CI_Controller {
           else
           {
                   $datos['exito'] = 'Tu foto de perfil se ha actualizado con exito';
-                  $this->Usuario->set_foto($this->session->userdata('usuario')['id'], $config['file_name']);                  
+                  $this->Usuario->set_foto($this->session->userdata('usuario')['id'], $config['file_name']);
           }
           if ($this->Usuario->logueado() && $this->session->userdata('usuario')['id']  === "1") {
             $datos['filas'] = $this->Usuario->get_usuarios();

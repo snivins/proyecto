@@ -52,13 +52,14 @@
   </div>
 <?php endif ?>
 
-<input type="submit" value="upload" />
+<input type="submit" value="Subir" />
 
 </form>
             </div>
             <div class="panel-body">
               <?php if (isset($filas)) {
-                ?>  <table border="1"
+                ?> <a href="<?= base_url() ?>pdfs/generar" id="texto_negro" title="Listado">Listado como pdf</a>
+                  <table border="1"
                          class="table table-striped table-bordered table-hover table-condensed">
                     <thead>
                       <th>Nick</th>
@@ -75,7 +76,8 @@
                         </tr>
                       <?php endforeach ?>
                     </tbody>
-                  </table><?php
+                  </table>
+                    <?php
               }?>
 
             </div>

@@ -110,7 +110,7 @@ class Juegos extends CI_Controller {
 		$valores['posicion']=$this->Usuario->get_posicion($this->session->userdata('usuario')['id'])['posicion'];
 		$situacion = $this->Juego->get_estado_jugador($valores);
 
-		$situacion['activo'] = $this->Juego->get_jug_activo($valores['id_partida']);
+		//$situacion['activo'] = $this->Juego->get_jug_activo($valores['id_partida']);
 		if (!isset($_REQUEST['jugada'])) {
 			//echo(json_encode(array('juega'=>'no')));
 			echo(json_encode($situacion));
@@ -174,7 +174,7 @@ class Juegos extends CI_Controller {
 				$datos['turno_jug'] = $sig_jug;
 				$nombre_jugada = $this->Juego->get_jug_id($posicion, $valores['id_partida']);
 				$nombre_jugada = $this->Usuario->get_nick($nombre_jugada[$posicion]);
-				$datos['ultima_jugada']= $nombre_jugada['nick'] . ' quiere jugar por '.$datos['puntos_ronda'].' puntos.';
+				$datos['ultima_jugada']= $nombre_jugada['nick'] . ' quiere jugar por '.$datos['puntos_ronda'].' puntos';
 				$datos[$sig_jug] = json_encode($jugador_defensa);
 				$this->Juego->insertar_jugada($datos);
 		} else if ($valores['movimiento'] === 'Mas'){
@@ -258,9 +258,8 @@ class Juegos extends CI_Controller {
 			$datos['cartas_jugadas_totales'] = json_decode($datos['ultima_mano']);
 			$datos['ultima_mano'] = json_decode($datos['cartas_jugadas']);
 			array_shift($datos['ultima_mano']);
-			foreach ($datos['ultima_mano'] as $key => $value) {
-				$datos['cartas_jugadas_totales'][] = $value;
-			}
+			$datos['cartas_jugadas_totales'] = array_merge($datos['cartas_jugadas_totales'],$datos['ultima_mano']);
+			$datos['cartas_jugadas_totales'] = json_encode($datos['cartas_jugadas_totales']);
 			$datos['ultima_mano'] = json_encode($datos['ultima_mano']);
 			if ($nueva_ronda) {
 				$baraja = $this->barajar();
@@ -371,9 +370,8 @@ class Juegos extends CI_Controller {
 				$datos['cartas_jugadas_totales'] = json_decode($datos['ultima_mano']);
 				$datos['ultima_mano'] = json_decode($datos['cartas_jugadas']);
 				array_shift($datos['ultima_mano']);
-				foreach ($datos['ultima_mano'] as $key => $value) {
-					$datos['cartas_jugadas_totales'][] = $value;
-				}
+				$datos['cartas_jugadas_totales'] = array_merge($datos['cartas_jugadas_totales'],$datos['ultima_mano']);
+				$datos['cartas_jugadas_totales'] = json_encode($datos['cartas_jugadas_totales']);
 				$datos['ultima_mano'] = json_encode($datos['ultima_mano']);
 				if ($nueva_ronda) {
 					$baraja = $this->barajar();
@@ -601,10 +599,10 @@ class Juegos extends CI_Controller {
 					if ($jug_ganador > 4) $jug_ganador -= 4;
 					if ($jug_ganador%2 == 0){//2 o 4 gana equipo 2
 						$datos['puntos_equipo_2'] += $datos['puntos_ronda'];
-						$datos['ultima_jugada'].= 'Equipo 2 gana '.$datos['puntos_ronda'].' puntos.';
+						$datos['ultima_jugada'].= 'Equipo 2 gana '.$datos['puntos_ronda'].' puntos';
 					} else {//1 o 3 equipo 1
 						$datos['puntos_equipo_1'] += $datos['puntos_ronda'];
-						$datos['ultima_jugada'].= 'Equipo 1 gana '.$datos['puntos_ronda'].' puntos.';
+						$datos['ultima_jugada'].= 'Equipo 1 gana '.$datos['puntos_ronda'].' puntos';
 					}
 				}
 				$datos['puntos_ronda'] = 1;
@@ -613,6 +611,13 @@ class Juegos extends CI_Controller {
 				if ($datos['turno'] != 0){
 					$datos['turno']--;
 				}
+
+
+				//vemos si hay ganador
+				if ($datos['puntos_equipo_2'] >= 30 || $datos['puntos_equipo_1'] >= 30){
+					$this->Juego->fin_partida($id_partida, 'terminada');
+				}
+
 
 				$datos['cartas_jugadas'] = json_encode($baraja[0]);
 				$this->Juego->insertar_jugada($datos);

@@ -30,7 +30,7 @@ create table mensajes (
 drop table if exists partidas cascade;
 create table partidas (
   id_partida  bigserial constraint pk_partidas primary key,
-  estado varchar(30),  /* creada, jugando, terminada, cancelada*/
+  estado varchar(30),  /* creada, jugando, terminando, terminada, cancelada*/
   creada_el timestamp default current_timestamp,
   "jug_1"  bigint constraint fk_partidas_1_usuarios references usuarios(id),
   "jug_2"  bigint constraint fk_partidas_2_usuarios references usuarios(id),

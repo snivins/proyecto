@@ -22,6 +22,7 @@
         <script src="/js/jquery.min.js"></script>
         <script src="/js/jcanvas.min.js"></script>
         <script src="/js/jquery.cookie.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     </head>
     <body itemscope itemtype="http://schema.org/VideoGame"><header>
             <a href="#cuerpo"><img src="/images/logo.png" itemprop="image" title="Inicio" alt="inicio" /></a>
@@ -58,11 +59,11 @@
             </article>
         </header>
         <nav>
-            <a href="<?= base_url() ?>juegos/juego" title="Inicio">Inicio</a>
-            <a href="<?= base_url() ?>juegos" title="Jugar ahora">Jugar</a>
-            <a href="<?= base_url() ?>juegos/tutorial" title="Aprende a jugar">Tutorial</a>
-            <a href="<?= base_url() ?>usuarios/cuenta" title="Cuenta de usuario">Perfil</a>
-            <a href="<?= base_url() ?>juegos/multimedia" title="Videos">Multimedia</a>
+            <a href="<?= base_url() ?>juegos/juego" title="Inicio"><span class="texto">Inicio</span><span class="icono"><i class="fa fa-home"></i></a>
+            <a href="<?= base_url() ?>juegos" title="Jugar ahora"><span class="texto">Jugar</span><span class="icono"><i class="fa fa-gamepad"></i></a>
+            <a href="<?= base_url() ?>juegos/tutorial" title="Aprende a jugar"><span class="texto">Tutorial</span><span class="icono"><i class="fa fa-info-circle"></i></a>
+            <a href="<?= base_url() ?>usuarios/cuenta" title="Cuenta de usuario"><span class="texto">Perfil</span><span class="icono"><i class="fa fa-address-card-o"></i></span></a>
+            <a href="<?= base_url() ?>juegos/multimedia" title="Videos"><span class="texto">Multimedia</span><span class="icono"><i class="fa fa-youtube-play"></i></a>
         </nav>
         <section id="cuerpo" class="container-fluid" >
           <div class="row">
