@@ -41,10 +41,24 @@ class Juegos extends CI_Controller {
 	public function multimedia() {
 		$this->template->load('multimedia');
 	}
+	public function nuevo_nombre() {
+		$id_partida= $this->Juego->get_id_partida($this->session->userdata('usuario')['id'])['id_partida'];
+		$nombre = $_REQUEST['nombre'];
+		if ($nombre != null && $nombre != ""){
+			$this->Juego->set_nombre($id_partida, $nombre);
+		}
+	}
 	public function abandonar_partida()
 	{
 		$id_partida = $this->Juego->get_id_partida($this->session->userdata('usuario')['id'])['id_partida'];
-		$this->Juego->fin_partida($id_partida, 'cancelada');
+		$this->Juego->fin_partida($id_partida, 'abandonando');
+	}
+	public function confirmar_salir()
+	{
+		$id = $this->session->userdata('usuario')['id'];
+		$id_partida = $this->Juego->get_id_partida($id)['id_partida'];
+
+		$this->Juego->confirmar_salida($id_partida, $id);
 	}
 	public function tutorial(){
 		$this->template->load('tutorial');
@@ -125,8 +139,12 @@ class Juegos extends CI_Controller {
 		$valores['movimiento'] = $_REQUEST['movimiento'];
 		$posicion = $this->Usuario->get_posicion($valores['id'])['posicion'];
 		$datos = $this->Juego->get_estado_partida($valores['id_partida']);
-		if ($datos['puntos_equipo_1'] >= 30 || $datos['puntos_equipo_2'] >= 30){
-			$this->Juego->fin_partida($id_partida, 'terminada');
+		if ($datos['puntos_equipo_1'] >= 30){
+			var_dump("ay");
+			$this->Juego->fin_partida($valores['id_partida'], 'terminando1');
+		}
+		if ($datos['puntos_equipo_2'] >= 30){
+			$this->Juego->fin_partida($valores['id_partida'], 'terminando2');
 		}
 		$valores_jugador = json_decode($datos[$posicion],true);
 		if ($valores_jugador['estado'] !== 'defensa' && $valores_jugador['estado'] !== 'ataque'){
@@ -614,14 +632,19 @@ class Juegos extends CI_Controller {
 
 
 				//vemos si hay ganador
-				if ($datos['puntos_equipo_2'] >= 30 || $datos['puntos_equipo_1'] >= 30){
-					$this->Juego->fin_partida($id_partida, 'terminada');
-				}
 
+				if ($datos['puntos_equipo_1'] >= 30){
+					var_dump("ay");
+					$this->Juego->fin_partida($valores['id_partida'], 'terminando1');
+				}
+				if ($datos['puntos_equipo_2'] >= 30){
+					$this->Juego->fin_partida($valores['id_partida'], 'terminando2');
+				}
 
 				$datos['cartas_jugadas'] = json_encode($baraja[0]);
 				$this->Juego->insertar_jugada($datos);
 			}
+
 		}
 	}
 

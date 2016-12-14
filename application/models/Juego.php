@@ -81,18 +81,45 @@ class Juego extends CI_Model
 														jug_1,jug_2,jug_3,jug_4,puntos_pendientes,ultima_mano, cartas_jugadas_totales	from jugadas
 														where id_partida= $id_partida order by id desc")->row_array();
 	}
+		public function get_estado_partida_final($id_partida)
+	{
+		return $this->db->query("select estado from partidas
+														where id_partida= $id_partida")->row_array();
+	}
 	public function set_jugada($valores){
 
 		$this->db->where('id', $valores['id'])->update('jugadas', $valores);
 	}
+	public function set_nombre($id_partida, $nombre){
+		$datos['nombre'] = $nombre;
+
+		$this->db->where('id_partida', $id_partida)->update('partidas', $datos);
+	}
 	public function fin_partida($id_partida, $estado){
 			$this->db->where('id_partida', $id_partida)->update('partidas', array('estado' => $estado));
+			/*
 			for ($i = 1; $i<5;$i++){
 				$jug = $this->get_jug_id('jug_'.$i, $id_partida);
 				if ($jug !== NULL) {
 					$this->set_estado(array('id_partida' => $id_partida, 'estado' => null));
 				}
+			}*/
+	}
+	public function confirmar_salida($id_partida, $id)
+	{
+		$posicion = $this->Usuario->get_posicion($id);
+		$jugador = array(
+			$posicion['posicion'] => null
+		);
+		$this->db->where('id_partida', $id_partida)->update('partidas', $jugador);
+
+		if ($this->partida_terminada_completa($id_partida)){
+			if ($this->get_estado_partida_final($id_partida)['estado'] == 'cancelando') {
+				$this->db->where('id_partida', $id_partida)->update('partidas', array('estado' => 'cancelada'));
+			} else {
+				$this->db->where('id_partida', $id_partida)->update('partidas', array('estado' => 'terminada'));
 			}
+		}
 	}
 
 	public function set_estado($valores)
@@ -107,6 +134,14 @@ class Juego extends CI_Model
 														jug_3 is not null and jug_4 is not null ");
 		return $res->num_rows()>0?true:false;
 	}
+
+		public function partida_terminada_completa($id_partida)
+		{
+			$res = $this->db->query("select * from partidas where id_partida=$id_partida
+															AND jug_1 is null and jug_2 is null and
+															jug_3 is null and jug_4 is null ");
+			return $res->num_rows()>0?true:false;
+		}
 	public function get_info($id_partida)
 	{
 		return $this->db->query("select * from partidas

@@ -71,6 +71,16 @@ width: 156px;
            flex-wrap: nowrap;
            flex: 4;
   }
+
+    #lobby, #menu{
+      width: 100%;
+         display: -webkit-flex;
+         display: flex;
+         align-items: center;
+         justify-content: flex-start;
+         flex-direction: column;
+
+    }
   .whiterino {
     color: white;
   }
@@ -408,6 +418,16 @@ box-shadow: 5px 5px 5px 0px rgba(0,0,0,0.75);
 }
 #texto_negro {
   color:black;
+}
+#final {
+display: -webkit-flex;
+display: flex;
+justify-content: center;
+width: 100%;
+}
+#info_fin_partida, #info_equipos_fin_partida {
+  text-align: center;
+  font-size: 2em;
 }
 #jug_up {
   position: relative;
