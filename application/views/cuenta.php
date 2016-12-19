@@ -34,7 +34,6 @@
               <p>Usuario: <?= $info_usuario_nick['nick'] ?> </p>
               <p>Foto de perfil:</p><img src="/upload/<?= $info_usuario_foto['foto_perfil'] ?>"></img>
 
-
 <?php echo form_open_multipart('usuarios/foto_perfil');?>
 
 <input type="file" name="foto" size="20" />
